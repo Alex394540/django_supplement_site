@@ -1,0 +1,30 @@
+<html>
+
+<head>
+<link rel="stylesheet" href="/static/trial/css/form.css">
+<link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+</head>
+
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12 col-md-12">
+            <div class="account-wall">
+			    <h2 style="text-align: center; font-family: Georgia, serif;"> Registration form </h2>
+                <form class="form-signin" action="/trial/register/" method="post">
+				    {% csrf_token %}
+					<input type="text" class="form-control" placeholder="Login" name="username" required autofocus>
+					<input type="password" class="form-control" placeholder="Password" name="password1" required>
+					<input type="password" class="form-control" placeholder="Repeat password" name="password2" required>
+                    <input type="text" class="form-control" placeholder="First name" name="first_name" required>
+                    <input type="text" class="form-control" placeholder="Last name" name="last_name" required>
+                    <input type="email" class="form-control" placeholder="Email" name="email" required>
+					<button class="btn btn-lg btn-primary btn-block" type="submit" style="font-family: Georgia, serif; background-color: rgb(18, 79, 65);">
+					      Register</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

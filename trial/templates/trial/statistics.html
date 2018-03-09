@@ -1,0 +1,124 @@
+<html>
+
+<head>
+<link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+<link href="https://fonts.googleapis.com/css?family=Archivo+Narrow|Graduate" rel="stylesheet">
+<link rel="stylesheet" href="/static/trial/css/statistics.css">
+</head>
+
+<body>
+<a name="top"></a>
+{% include "trial\navbar.html" %}
+	<div class="wrap">
+		<div style="margin-bottom: 5%">
+
+		<script type="text/javascript" src="/static/trial/js/jquery-3.3.1.min.js"></script>
+		<script type="text/javascript" src="/static/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+		<script type="text/javascript" src="/static/trial/js/statistics.js"></script>
+		<script type="text/javascript">
+
+		google.load("visualization", "1", {packages:["corechart"]});
+		google.setOnLoadCallback(drawChart);
+
+		function drawChart() {
+			draw_prod_cat("{{all_products}}".replace(/&quot;/g, '"'), "All products " + (new Date).getFullYear(), "all_prod");
+			draw_prod_cat("{{by_category}}".replace(/&quot;/g, '"'), "Sales by category", "by_categ");
+			draw_month("{{by_months}}".replace(/&quot;/g, '"'), "by_months");
+		}
+
+		function dropIt() {
+			document.querySelector('.dropdown-toggle').dropdown();
+			}
+
+		</script>
+		
+		<div>
+			<div style="width: 100%;">
+				<div class="dropdown">
+				<p class='select_title'>Set time interval</p>
+				  <span class="glyphicon glyphicon-chevron-left" title="previous" aria-hidden="true" onclick="change_year(this, -1)"></span>
+				  <button onclick="dropIt()"
+					class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" 
+					data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" value='{% now "Y" %}'>{% now 'Y' %}<span class="caret"></span>
+				  </button>
+				  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+					<li><a href="#" onclick="resetChart(this, 'all_prod', month = '00'); return false">All year</a></li>
+					<li><a href="#" onclick="resetChart(this, 'all_prod', month = '01'); return false">January</a></li>
+					<li><a href="#" onclick="resetChart(this, 'all_prod', month = '02'); return false">February</a></li>
+					<li><a href="#" onclick="resetChart(this, 'all_prod', month = '03'); return false">March</a></li>
+					<li><a href="#" onclick="resetChart(this, 'all_prod', month = '04'); return false">April</a></li>
+					<li><a href="#" onclick="resetChart(this, 'all_prod', month = '05'); return false">May</a></li>
+					<li><a href="#" onclick="resetChart(this, 'all_prod', month = '06'); return false">June</a></li>
+					<li><a href="#" onclick="resetChart(this, 'all_prod', month = '07'); return false">July</a></li>
+					<li><a href="#" onclick="resetChart(this, 'all_prod', month = '08'); return false">August</a></li>
+					<li><a href="#" onclick="resetChart(this, 'all_prod', month = '09'); return false">September</a></li>
+					<li><a href="#" onclick="resetChart(this, 'all_prod', month = '10'); return false">October</a></li>
+					<li><a href="#" onclick="resetChart(this, 'all_prod', month = '11'); return false">November</a></li>
+					<li><a href="#" onclick="resetChart(this, 'all_prod', month = '12'); return false">December</a></li>
+				  </ul>
+				  <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" title="next" onclick="change_year(this, +1)"></span>
+				</div>
+				<div id="all_prod"></div>
+				<hr>
+			</div>
+			
+			<div style="width: 100%;">
+				<div class="dropdown">
+				<p class='select_title'>Set time interval</p>
+				  <span class="glyphicon glyphicon-chevron-left" aria-hidden="true" title="previous" onclick="change_year(this, -1)"></span>
+				  <button onclick="dropIt()"
+					class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" 
+					aria-expanded="true" value='{% now "Y" %}'>{% now 'Y' %}<span class="caret"></span>
+				  </button>
+				  
+				  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+					<li><a href="#" onclick="resetChart(this, 'by_categ', month = '00'); return false">All year</a></li>
+					<li><a href="#" onclick="resetChart(this, 'by_categ', month = '01'); return false">January</a></li>
+					<li><a href="#" onclick="resetChart(this, 'by_categ', month = '02'); return false">February</a></li>
+					<li><a href="#" onclick="resetChart(this, 'by_categ', month = '03'); return false">March</a></li>
+					<li><a href="#" onclick="resetChart(this, 'by_categ', month = '04'); return false">April</a></li>
+					<li><a href="#" onclick="resetChart(this, 'by_categ', month = '05'); return false">May</a></li>
+					<li><a href="#" onclick="resetChart(this, 'by_categ', month = '06'); return false">June</a></li>
+					<li><a href="#" onclick="resetChart(this, 'by_categ', month = '07'); return false">July</a></li>
+					<li><a href="#" onclick="resetChart(this, 'by_categ', month = '08'); return false">August</a></li>
+					<li><a href="#" onclick="resetChart(this, 'by_categ', month = '09'); return false">September</a></li>
+					<li><a href="#" onclick="resetChart(this, 'by_categ', month = '10'); return false">October</a></li>
+					<li><a href="#" onclick="resetChart(this, 'by_categ', month = '11'); return false">November</a></li>
+					<li><a href="#" onclick="resetChart(this, 'by_categ', month = '12'); return false">December</a></li>
+				  </ul>
+				  <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" title="next" onclick="change_year(this, +1)"></span>
+				</div>
+				<div id="by_categ"></div>
+			</div>
+			<hr>
+		</div>
+
+		<h2> Sales by months </h2>
+
+		<div class="form-row">
+			  <label for="sel1">Select category:</label>
+			  <select class="form-control" id="sel1" onchange='resetChart(value, "by_months", month=false, is_category=true);'>
+					<option value='All categories' selected="selected">All categories</option>
+				{% for c in c_list %}
+					<option value="{{ c }}">{{ c }}</option>
+				{% endfor %}
+			  </select>
+			  
+			  <label for="sel2">Select product name:</label>
+			  <select class="form-control" id="sel2" onchange='resetChart(value, "by_months", month=false, is_category=false);'>
+				<option value='All products' selected="selected">All products</option>
+			  {% for n in d_list %}
+				<option value="{{ n }}">{{ n }}</option>
+			  {% endfor %}
+			  </select>	  
+		</div>
+
+		<div id="by_months"></div>
+
+		</div>
+	{% include "trial\footer.html" %}
+	</div>
+</body>
+
+</html>

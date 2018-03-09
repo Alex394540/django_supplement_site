@@ -1,0 +1,132 @@
+<html>
+
+<head>
+<link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="/static/trial/css/operations.css">
+<link href="https://fonts.googleapis.com/css?family=Archivo+Narrow|Graduate" rel="stylesheet">
+<script type="text/javascript" src="/static/trial/js/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="/static/trial/js/operations.js"></script>
+</head>
+
+<body>
+<a name="top"></a>
+{% include "trial\navbar.html" %}
+<div class="wrap">
+		<div class="floatleft col-md-5 my_cols" style="margin-bottom: 7%;">
+			<h2 style="text-align: center; font-family: 'Graduate', cursive;"> Sellings </h2>
+			
+			<hr>
+			
+				<div class="form-group row" id="search_form" >
+				    <div class="col-xs-4">
+					    <label> Search by name:
+							<div class="form-inline">
+								<input type="text" class="form-control" id="product_name" placeholder="Type product name" name="name" list="products">
+									<datalist id="products"></datalist>
+								<button class="btn btn-default" type="button" onclick="searchName(true);">
+									<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+								</button>
+							</div>
+						</label>
+					</div>
+                    
+					<div class="form-inline">
+						<div class="col-xs-2">
+							<label>
+								Starting date:<input type="text" class="form-control" id="start_date_search" placeholder="YYYY-MM-DD">
+							</label>
+						</div>
+						
+						<div class="col-xs-4">
+							<label> Ending date: 
+								<div class="form-inline">
+									<input type="text" class="form-control" id="end_date_search" placeholder="YYYY-MM-DD">
+									<button class="btn btn-default" type="button" onclick="searchDate(true);">
+										<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+									</button>
+								</div>
+							</label>
+						</div>
+					</div>
+
+				</div>
+			
+			<hr>
+			<table class="table table-striped table-bordered" id="sellTable" style="font-family: 'Archivo Narrow', sans-serif;">
+				<tr>
+					<th> Date </th>
+					<th> Name of product </th>
+					<th> Amount </th>
+					<th> Price($) </th>
+					<th> Total cost($)</th>
+                    <th> Prescribed by </th>
+				</tr>
+			{% for item in sellings %}
+				<tr>
+				{% for i in item %}
+					<td> {{ i }} </td>
+				{% endfor %}
+				</tr>
+			{% endfor %}
+			</table>
+		</div>
+		<div class="floatright col-md-3 my_cols" style="margin-bottom: 7%;">
+			<h2 style="text-align: center; font-family: 'Graduate', cursive;"> Buyings </h2>
+			
+			<hr>
+			
+				<div class="form-group row" id="search_form2" >
+				    <div class="col-xs-4">
+					    <label> Search by name:
+							<div class="form-inline">
+								<input type="text" class="form-control" id="product_name2" placeholder="Type product name" name="name" list="products">
+									<datalist id="products2"></datalist>
+								<button class="btn btn-default" type="button" onclick="searchName(false);">
+									<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+								</button>
+							</div>
+						</label>
+					</div>
+                    
+					
+					<div class="form-inline">
+						<div class="col-xs-2">
+							<label>
+								Starting date:<input type="text" class="form-control" id="start_date_search2" placeholder="YYYY-MM-DD">
+							</label>
+						</div>
+						
+						<div class="col-xs-4">
+							<label> Ending date: 
+								<div class="form-inline">
+									<input type="text" class="form-control" id="end_date_search2" placeholder="YYYY-MM-DD">
+									<button class="btn btn-default" type="button" onclick="searchDate(false);">
+										<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+									</button>
+								</div>
+							</label>
+						</div>
+					</div>
+					
+				</div>
+			
+			<hr>
+			<table class="table table-striped table-bordered" id="buyTable" style="font-family: 'Archivo Narrow', sans-serif;">
+				<tr>
+					<th> Date </th>
+					<th> Name of product </th>
+					<th> Amount </th>
+				</tr>
+			{% for item in buyings %}
+				<tr>
+				{% for i in item %}
+					<td> {{ i }} </td>
+				{% endfor %}
+				</tr>
+			{% endfor %}
+			</table>
+		</div>
+{% include "trial\footer.html" %}
+</div>
+</body>
+</html>

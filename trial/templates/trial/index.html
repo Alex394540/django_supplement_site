@@ -1,0 +1,70 @@
+<html>
+
+<head>
+<link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+<link href="https://fonts.googleapis.com/css?family=Archivo+Narrow|Graduate" rel="stylesheet">
+<link rel="stylesheet" href='/static/trial/css/styles.css'>
+<script type="text/javascript" src="/static/trial/js/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="/static/trial/js/main_page.js"></script>
+</head>
+
+{% load app_filters %}
+<body id="body_el">
+<a name="top"></a>
+{% include "trial\navbar.html" %}
+<div style="overflow: auto; position: relative; height: auto; min-height: 92.4%;">
+<h2 id="top_head"> Products List </h2>
+
+	<div class="form-inline" id="search_form" >
+	    <label> Search by name:
+			<input type="text" class="form-control" id="product_name" placeholder="Type product name" name="name" list="products">
+				<datalist id="products"></datalist>
+			<button class="btn btn-default" type="button" id="go_search" onclick="findProduct();">
+				<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+			</button>
+		</label>
+	</div>
+
+
+<hr>
+<div id="table_container" style="margin-bottom: 7%;">
+	<table class="table table-striped">
+		<tr>
+			{% for field in f_names %}
+				<th> {{ field }} </th>
+			{% endfor %}
+			{% if user.is_staff %}
+                <th> Prescribed by </th>
+				<th> </th>
+			{% endif %}
+		</tr>
+		{% for drug in d_list %}
+		<tr>
+		    <td><a href="/trial/product_page?id={{drug.0}}">{{ drug.1 }}</a></td>
+			{% for drug_name in drug.2 %}
+				<td> {{ drug_name | prepend_dollars }} </td>
+			{% endfor %}
+		{% if user.is_staff %}
+        <td> 
+            <select class="form_control" id="doctor_{{ drug.0 }}">
+                <option> *Select doctor </option>
+                {% for d in doctors %}
+                <option> {{ d }} </option>
+                {% endfor %}
+            </select>
+        </td>
+		<td onmouseover="show_input({{ drug.0 }})" onmouseout="hide_input({{ drug.0 }})"> 
+			<input type="text" class="form-control hideIt" id="panel_{{ drug.0 }}">
+			<span class="glyphicon glyphicon-plus plus" aria-hidden="true" onclick="change_amount({{ drug.0 }}, 1)" title="Add"></span>
+			<span class="glyphicon glyphicon-minus minus" aria-hidden="true" onclick="change_amount({{ drug.0 }}, -1)" title="Sell"></span>
+		</td>
+		{% endif %}
+		</tr>
+		{% endfor %}
+	</table>
+</div>
+{% include "trial\footer.html" %}
+</div>
+<script src="/static/trial/js/trading.js"></script>
+</body>
+</html>

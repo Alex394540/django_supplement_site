@@ -1,0 +1,70 @@
+body {
+	background: url("/static/trial/images/stat_bg.jpg");
+}
+
+hr {
+	background-color: black; 
+	clear: both;
+	height: 1px;
+}
+
+h2 {
+	margin-top: 50px; 
+	text-align: center;
+    font-family: Trebuchet MS;	
+	font-weight: bold;
+}
+
+label {
+	font-family: Trebuchet MS;
+	font-weight: bold;
+}
+
+.wrap {
+	position: relative; 
+	overflow: auto; 
+	overflow-x: auto; 
+	width: 1300px; 
+	margin: auto; 
+	background-color: #f4f6f9;
+}
+
+.dropdown {
+	width: 15%; 
+	margin-left: 10%; 
+	margin-top: 20%; 
+	float: left;
+}
+	
+.glyphicon {
+	cursor: pointer;
+}
+
+.form-row {
+	width: 15%; 
+	margin-left: 5%;
+}
+
+.select_title {
+	font-family: Trebuchet MS;
+	font-weight: bold;
+}
+
+#by_categ {
+	font-family: Sanf-serif; 
+	float: left; 
+	width: 75%;
+}
+
+#all_prod {
+	font-family: Sanf-serif; 
+	float: left; 
+	width: 75%;
+}
+
+#by_months {
+	font-family: Sanf-serif; 
+	margin-left: 20%; 
+	width: 80%; 
+	height: 350px;
+}

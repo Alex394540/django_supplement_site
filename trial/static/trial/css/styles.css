@@ -1,0 +1,33 @@
+#body_el {
+	background: rgb(255,255,255);
+}
+
+.table {
+	font-family: 'Archivo Narrow', sans-serif;
+}
+
+#top_head {
+	font-family: 'Graduate', cursive;
+	text-align: center;
+}
+
+.hideIt {
+	padding: 1px;
+	width: 40px;
+	height: 20px;
+	visibility: hidden;
+}
+
+.hideIt, .plus, .minus {
+	float: left;
+}
+
+#search_form {
+	width: 30%;
+}
+
+/*
+tr td:nth-of-type(1) {
+   text-decoration: underline;
+}
+*/

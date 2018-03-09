@@ -1,0 +1,35 @@
+<html>
+
+<head>
+<link rel="stylesheet" href="/static/trial/css/form.css">
+<link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+<script type="text/javascript" src="/static/trial/js/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="/static/trial/js/livesearch.js"></script>
+</head>
+
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12 col-md-12">
+            <div class="account-wall">
+			    <h2 style="text-align: center; font-family: Georgia, serif;"> Add New Product </h2>
+                <form class="form-signin" action="/trial/add_drug/" method="post">
+				    {% csrf_token %}
+					<input type="text" class="form-control" placeholder="Product name" name="name" list="products" required autofocus>
+					<datalist id="products"></datalist>
+					<input type="text" class="form-control" placeholder="Drug form" name="form" required>
+					<input type="text" class="form-control" placeholder="Total dosage" name="total_dosage" required>
+					<input type="text" class="form-control" placeholder="Manufacturer" name="manufacturer" list="manufacturers" required>
+					<datalist id="manufacturers"></datalist>
+					<input type="text" class="form-control" placeholder="Price($)" name="price" required>
+					<input type="text" class="form-control" placeholder="Category" name="category" list="categories" required>
+					<datalist id="categories"></datalist>
+					<button class="btn btn-lg btn-primary btn-block" type="submit" style="font-family: Georgia, serif; background-color: rgb(18, 79, 65);">
+					      Add </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

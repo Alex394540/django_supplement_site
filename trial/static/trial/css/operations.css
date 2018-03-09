@@ -1,0 +1,17 @@
+.wrap {
+    width: 100%;
+	height: auto;
+	min-height: 92.4%;
+    position:relative;
+	overflow: auto;
+}
+
+.floatleft {
+    float: left; 
+    width: 50%;
+}
+
+.floatright {
+    float: right;
+    width: 50%;
+}

@@ -1,0 +1,61 @@
+<html>
+
+<head>
+<link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+<link href="https://fonts.googleapis.com/css?family=Archivo+Narrow:400,700|Graduate" rel="stylesheet">
+<link rel="stylesheet" href='/static/trial/css/contacts.css'>
+</head>
+
+<body>
+{% include "trial\navbar.html" %}
+<div id="main_part">
+    <div id="map"></div>
+	<div id="without_map">
+		<div class="table-responsive" id="schedule">
+			<table>
+				<tr><th></th><th> Office Hours </th></tr>
+				<tr><td>&nbsp &nbsp &nbsp </td> <td>&nbsp &nbsp &nbsp </td><td> &nbsp &nbsp &nbsp </td></tr>
+				<tr><td> Monday</td><td>&nbsp &nbsp &nbsp </td><td>9:00 - 17:00</td></tr>
+				<tr><td> Tuesday</td><td>&nbsp &nbsp &nbsp </td><td>9:00 - 17:00</td></tr>
+				<tr><td> Wednesday</td><td>&nbsp &nbsp &nbsp </td><td>9:00 - 17:00</td></tr>
+				<tr><td> Thursday</td><td>&nbsp &nbsp &nbsp </td><td>9:00 - 17:00</td></tr>
+				<tr><td> Friday</td><td>&nbsp &nbsp &nbsp </td><td>9:00 - 17:00</td></tr>
+				<tr><td> Saturday</td><td>&nbsp &nbsp &nbsp </td><td>Closed</td></tr>
+				<tr><td> Sunday </td><td>&nbsp &nbsp &nbsp </td><td>Closed</td></tr>
+			</table>
+		</div>
+		<div id="contacts">
+		    <div>
+				<p> Address: 3200 East Los Angeles Avenue, #28 Simi Valley, CA 93065 </p>
+				<p> Tel: (805) 522-2900 </p>
+				<p> Email: simineuronoffice@gmail.com </p>
+				<p> More info: <a href='http://neuronmedical.net/'> www.neuronmedical.net </a></p>
+			</div>
+		</div>
+	</div>
+</div>
+    <script>
+    var map;
+    function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: {lat: 34.271, lng: -118.734},
+            zoom: 17
+        });
+		
+		var marker = new google.maps.Marker({  
+			position: {lat: 34.271, lng: -118.734},
+			map: map,
+			title: 'Neuron Medical Corporation'
+		});
+		
+		google.maps.event.addListener(marker, 'click', function() {
+			window.open('http://neuronmedical.net/');
+		});
+		
+	}
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBNGTer7n7ZncHRyHnGSi-wq1qLkNdto98&callback=initMap"
+    async defer></script>
+</body>
+
+</html>
