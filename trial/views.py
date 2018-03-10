@@ -9,6 +9,9 @@ from .models import *
 from datetime import datetime
 import json
 
+import traceback
+import sys
+
 #Get all months that are between d1 and d2
 def get_months_list(d1, d2):
     y1, m1, y2, m2 = (int(a) for x in (d1,d2) for a in x.split('-'))
@@ -32,7 +35,7 @@ def log_in(request):
     return render(request, 'trial/login.html', {})
 
 def register(request):
-
+    
     if request.method == 'POST':
     
         username = request.POST['username']
@@ -62,10 +65,8 @@ def site_settings(request):
 @user_passes_test(lambda u: u.is_superuser)
 def createuser(request):
 
-    if not request.user.is_superuser:
-        return HttpResponseRedirect('/trial/')
-        
     if request.method == 'POST':
+        
         username = request.POST['username']
         password1 = request.POST['password1']
         password2 = request.POST['password2']
@@ -366,7 +367,7 @@ def get_manufacturers(request):
     
 def product_page(request):
     
-    id = request.GET['id']
+    id = request.GET.get('id', None)
     product = Drug.objects.get(pk=id)
     fields = {
               'id': id,
@@ -383,7 +384,7 @@ def product_page(request):
 @user_passes_test(lambda u: u.is_staff)
 def delete_product(request):
     
-    id = request.GET['id']
+    id = request.GET.get('id', None)
     product = Drug.objects.get(pk=id)
     product.delete()
 

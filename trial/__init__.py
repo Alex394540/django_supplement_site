@@ -1,1 +1,1 @@
-from trial.tests import *
+default_app_config = 'trial.apps.TrialConfig'
