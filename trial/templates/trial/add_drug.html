@@ -13,7 +13,7 @@
         <div class="col-sm-12 col-md-12">
             <div class="account-wall">
 			    <h2 style="text-align: center; font-family: Georgia, serif;"> Add New Product </h2>
-                <form class="form-signin" action="/trial/add_drug/" method="post">
+                <form class="form-signin" action="/trial/add_drug/" method="post" autocomplete='off'>
 				    {% csrf_token %}
 					<input type="text" class="form-control" placeholder="Product name" name="name" list="products" required autofocus>
 					<datalist id="products"></datalist>

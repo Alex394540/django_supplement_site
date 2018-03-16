@@ -15,3 +15,24 @@
     float: right;
     width: 50%;
 }
+
+.row {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+#name_search_cont {
+    padding-left: 0px;
+}
+
+#start_cont {
+    padding: 0 0 0 0;
+}
+
+#end_cont {
+    padding: 0 0 0 0;
+}
+
+#leftdiv {
+    margin-left: 2%;
+}

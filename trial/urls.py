@@ -19,6 +19,7 @@ urlpatterns = [
     path('ajax/stat_month/', views.stat_month, name='stat_month'),
     path('ajax/show_cat/', views.get_categories, name='show_cat'),
     path('ajax/show_prod/', views.get_products, name='show_prod'),
+    path('ajax/show_docs/', views.get_doctors, name='show_docs'),
     path('ajax/show_man/', views.get_manufacturers, name='show_man'),
     path('ajax/save_changes/', views.save_changes, name='save_changes'),
     path('ajax/delete_product/', views.delete_product, name='delete_product'),

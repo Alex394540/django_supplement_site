@@ -1,3 +1,20 @@
+function resetInputs(doc=true, prod=true, date=true)
+{
+    if (doc) {
+        $('#doctor_name').val('');
+    }
+    
+    if (prod) {
+        $('#product_name').val('');
+    }
+    
+    if (date) {
+        $('#start_date_search').val('');
+        $('#end_date_search').val('');
+    }
+}
+
+
 function dateCheck(date) {
 	
 	var test = /\d\d\d\d-\d\d-\d\d/i.test(date);
@@ -24,78 +41,63 @@ function displayResult(res, table) {
 		
 	$(table).find("tr:gt(0)").remove();
 	$(table).append(html);
-}	
+}
 
-function searchName(sell = true)
+function searchDoctor()
 {
-	var product;
-	var url;
-	if (sell) 
-	{
-		product = $("#product_name").val();
-		url = '/trial/ajax/filter_operations?op_type=sell&search_type=name&search_prop=' + product;
-	} 
-	else 
-	{
-		product = $("#product_name2").val();
-		url = '/trial/ajax/filter_operations?op_type=buy&search_type=name&search_prop=' + product;
-	}
+    resetInputs(false, true, true);
+    
+	var d_name = $("#doctor_name").val().split(' ');
+    var doctor = d_name[1] + "_" + d_name[2];
+	var url = '/trial/ajax/filter_operations?search_type=doc_name&search_prop=' + doctor;
 		
 	$.getJSON(url, function( res ) {
-		var selector = (sell) ? '#sellTable' : '#buyTable';
-		displayResult(res, selector);
+        displayResult(res[1], '#sellTable');
 	});
 			
 	return true;
 }
 
-function searchDate(sell = true)
+function searchName()
 {
-	var url;
-	if (sell) 
-	{
-		var start = $("#start_date_search").val();
-		start = (start == '') ? '1971-01-01' : start;
+    resetInputs(true, false, true);
+    
+	var product = $("#product_name").val();
+	var url = '/trial/ajax/filter_operations?search_type=name&search_prop=' + product;
+
+	$.getJSON(url, function( res ) {
+		displayResult(res[0], '#buyTable');
+        displayResult(res[1], '#sellTable');
+	});
 			
-		var end = $("#end_date_search").val();
-		end = (end == '') ? '2037-12-31' : end;
+	return true;
+}
+
+function searchDate()
+{
+    resetInputs(true, true, false);
+    
+	var start = $("#start_date_search").val();
+	start = (start == '') ? '1971-01-01' : start;
 			
-		var test1 = dateCheck(start);
-		var test2 = dateCheck(end);
+	var end = $("#end_date_search").val();
+	end = (end == '') ? '2037-12-31' : end;
 			
-	    if (!(test1 && test2)) {
-            alert("Wrong date or date format!");				
-		    return false;
-		}
+	var test1 = dateCheck(start);
+	var test2 = dateCheck(end);
 			
-		var date = start + '__' + end;
-			
-		url = '/trial/ajax/filter_operations?op_type=sell&search_type=date&search_prop=' + date;
-	} 
-	else 
-	{
-		var start = $("#start_date_search2").val();
-		start = (start == '') ? '1971-01-01' : start;
-			
-		var end = $("#end_date_search2").val();
-		end = (end == '') ? '2037-12-31' : end;
-			
-		var test1 = dateCheck(start);
-		var test2 = dateCheck(end);
-			
-		if (!(test1 && test2)) {
-            alert("Wrong date or date format!");				
-		    return false;
-		}
-			
-		var date = start + '__' + end;
-			
-		url = '/trial/ajax/filter_operations?op_type=buy&search_type=date&search_prop=' + date;
+	if (!(test1 && test2)) {
+        alert("Wrong date or date format!");				
+		return false;
 	}
+			
+	var date = start + '__' + end;
+			
+	var url = '/trial/ajax/filter_operations?search_type=date&search_prop=' + date;
 		
 	$.getJSON(url, function( res ) {
-		var selector = (sell) ? '#sellTable' : '#buyTable';
-		displayResult(res, selector);
+		displayResult(res[0], '#buyTable');
+        displayResult(res[1], '#sellTable');
 	});
 }
 
@@ -107,11 +109,21 @@ $(document).ready(function() {
 			ans = prods.map(x => '<option>' + x + '</option>');
 			ans.forEach(function(i) {
 		        $('#products').append(i);
-				$('#products2').append(i);
 	        });
 		});
 	}
+    
+    function showDocs()
+    {
+		$.getJSON('/trial/ajax/show_docs/', function( docs ) {
+			ans = docs.map(x => '<option>' + x + '</option>');
+			ans.forEach(function(i) {
+		        $('#doctors').append(i);
+	        });
+		});        
+    }
 	
 	showProd();
+    showDocs();
 
 });

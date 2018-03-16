@@ -60,7 +60,8 @@ def register(request):
     
 @user_passes_test(lambda u: u.is_superuser)
 def site_settings(request):
-    pass 
+    users = User.objects.all()
+    return render(request, 'trial/site_settings.html', {'users': users}) 
 
 @user_passes_test(lambda u: u.is_superuser)
 def createuser(request):
@@ -115,13 +116,13 @@ def success(request):
 def index(request):
     cursor = connection.cursor()
     cursor.execute('''SELECT trial_drug.id, trial_drug.name, trial_drugform.name, trial_drug.total_dosage, trial_manufacturer.name,
-                    trial_drug.price, trial_category.name, trial_drug.amount
+                    trial_category.name, trial_drug.amount, trial_drug.price
                     FROM trial_drug LEFT JOIN trial_category ON trial_drug.category_id = trial_category.id 
                     LEFT JOIN trial_manufacturer ON trial_drug.manufacturer_id = trial_manufacturer.id
                     LEFT JOIN trial_drugform ON trial_drug.form_id = trial_drugform.id ORDER BY trial_drug.name ASC''')
     data_list = cursor.fetchall()
     d_list = [(el[0], el[1], el[2:]) for el in data_list]
-    f_names = ['Product', 'Drug Form', 'Total Dosage', 'Manufacturer', 'Price($)', 'Category', 'Amount']
+    f_names = ['Product', 'Drug Form', 'Total Dosage', 'Manufacturer', 'Category', 'Amount', 'Price($)']
     docs = [d.__str__() for d in Doctor.objects.all()]
     return render(request, 'trial/index.html', {'d_list': d_list, 'f_names': f_names, 'doctors': docs})
 
@@ -317,35 +318,34 @@ def operations(request):
 @user_passes_test(lambda u: u.is_staff)
 def filter_operations(request):
 
-    op_type = request.GET['op_type']
     search_type = request.GET['search_type']
     search_prop = request.GET['search_prop']
-    
-    if op_type == 'buy':
 
-        if search_type == 'date':
-            date1, date2 = search_prop.split('__')
-            y1, m1, d1 = map(lambda x: int(x), date1.split('-'))
-            y2, m2, d2 = map(lambda x: int(x), date2.split('-'))
-            buy_res = Buying.objects.filter(date__gte=datetime(y1,m1,d1)).filter(date__lte=datetime(y2,m2,d2)).order_by('-date').values()
-        else:
-            buy_res = Buying.objects.filter(drug_name=search_prop).order_by('-date').values()
+    if search_type == 'date':
+        date1, date2 = search_prop.split('__')
+        y1, m1, d1 = map(lambda x: int(x), date1.split('-'))
+        y2, m2, d2 = map(lambda x: int(x), date2.split('-'))
+        buy_res = Buying.objects.filter(date__gte=datetime(y1,m1,d1)).filter(date__lte=datetime(y2,m2,d2)).order_by('-date').values()
+        sell_res = Selling.objects.filter(date__gte=datetime(y1,m1,d1)).filter(date__lte=datetime(y2,m2,d2)).order_by('-date').values()
         
-        res = [[str(d['date']), d['drug_name'], d['amount']] for d in buy_res]
-
+    elif search_type == 'name':
+        buy_res = Buying.objects.filter(drug_name=search_prop).order_by('-date').values()
+        sell_res = Selling.objects.filter(drug_name=search_prop).order_by('-date').values()
+        
     else:
+        names = search_prop.split('_')
+        f_name = names[0]
+        l_name = names[1]
         
-        if search_type == 'date':
-            date1, date2 = search_prop.split('__')
-            y1, m1, d1 = map(lambda x: int(x), date1.split('-'))
-            y2, m2, d2 = map(lambda x: int(x), date2.split('-'))
-            sell_res = Selling.objects.filter(date__gte=datetime(y1,m1,d1)).filter(date__lte=datetime(y2,m2,d2)).order_by('-date').values()
-        else:
-            sell_res = Selling.objects.filter(drug_name=search_prop).order_by('-date').values()
-            
-        res = [[str(d['date']), d['drug_name'], d['amount'], "%.2f" % d['price'], "%.2f" % (d['price'] * d['amount']), Doctor.objects.get(d['doctor_fk_id'])] for d in sell_res]
-       
-    return JsonResponse(res, safe=False)
+        doc_id = Doctor.objects.filter(last_name=l_name).filter(first_name=f_name).first().pk
+        sell_res = Selling.objects.filter(doctor_fk_id=doc_id).order_by('-date').values()
+        buy_res = []        
+        
+    b_final_res = [[str(d['date']), d['drug_name'], d['amount']] for d in buy_res]
+    s_final_res = [[str(d['date']), d['drug_name'], d['amount'], "%.2f" % d['price'], 
+                   "%.2f" % (d['price'] * d['amount']),Doctor.objects.get(pk=d['doctor_fk_id']).__str__()] for d in sell_res]
+   
+    return JsonResponse([b_final_res, s_final_res], safe=False)
 
 @user_passes_test(lambda u: u.is_staff)  
 def get_products(request):
@@ -363,6 +363,12 @@ def get_categories(request):
 def get_manufacturers(request):
     m_qset = Manufacturer.objects.all()
     m_list = [m.name for m in m_qset.order_by('name')]
+    return JsonResponse(m_list, safe=False)
+
+@user_passes_test(lambda u: u.is_staff)
+def get_doctors(request):
+    m_qset = Doctor.objects.all()
+    m_list = [m.__str__() for m in m_qset.order_by('last_name')]
     return JsonResponse(m_list, safe=False)
     
 def product_page(request):
