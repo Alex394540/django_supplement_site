@@ -27,4 +27,5 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('add_doctor/', views.add_doctor, name='add_doctor'),
     path('site_settings/', views.site_settings, name='site_settings'),
+    path('notifications/', views.notifications, name='notifications'),
 ]

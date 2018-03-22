@@ -20,6 +20,12 @@
 		{% endif %}
 	</ul>
 	<ul class="nav navbar-nav" id="user_op" style="float: right;">
+        {% if user.is_staff %}
+            <li class="active">
+		        <a href='/trial/notifications/' onmouseover="this.style.color='yellow';" onmouseout="this.style.color='';">Notifications</a>
+		    </li>
+        {% endif %}
+        
 	    {% if user.is_superuser %}
             <li class="active">
 				<a href='/trial/site_settings/' onmouseover="this.style.color='yellow';" onmouseout="this.style.color='';">Site Settings</a>

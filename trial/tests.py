@@ -5,6 +5,7 @@ from random import randint
 import unittest
 from .models import *
 import re
+from os import remove
 
 # Create your tests here.
 class TestViews(TestCase):
@@ -167,3 +168,50 @@ class TestViews(TestCase):
         
         decoded = response.content.decode('utf-8')
         assert(decoded.find(d.name) != -1)
+        
+        
+class TestModels(TestCase):
+
+    user = 'neuronmedicalproducts@gmail.com'
+    pwd = 'alexey63293'
+
+    def test_send_email(self):
+        
+        #Connect to service, get amount of emails before test sending
+        import imaplib
+        mail = imaplib.IMAP4_SSL('imap.gmail.com')
+        mail.login(self.user, self.pwd)
+        mail.list()
+        mail.select("inbox")
+        
+        result, data = mail.search(None, "ALL")
+        ids = data[0]
+        id_list = ids.split()
+        amount_before = len(id_list)
+        
+        #Send another one
+        sender = MailSender()
+        
+        retval = sender.send_email(self.user, 'TestSubj', 'TestBody')
+        assert(retval)
+        
+        #Connect to service, get amount of emails after test sending
+        mail.list()
+        mail.select("inbox")
+        result, data = mail.search(None, "ALL")
+        ids = data[0]
+        id_list = ids.split()
+        amount_after = len(id_list)
+        
+        assert(amount_after == amount_before + 1)
+        
+    def test_not_sent(self):
+    
+        sender = MailSender()
+            
+        non_existing_user = 'some_not_existing_user'
+        
+        retval = sender.send_email(non_existing_user, 'TestSubj', 'TestBody')
+        assert(not retval)
+        
+        assert(NotSentMail.objects.filter(recipient=non_existing_user).count() == 1)

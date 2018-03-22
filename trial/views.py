@@ -6,7 +6,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db import connection
 from .models import *
-from datetime import datetime
+from datetime import datetime, timedelta
+from django.utils import timezone
 import json
 
 import traceback
@@ -60,9 +61,50 @@ def register(request):
     
 @user_passes_test(lambda u: u.is_superuser)
 def site_settings(request):
-    users = User.objects.all()
-    return render(request, 'trial/site_settings.html', {'users': users}) 
 
+    if request.method == 'POST':
+        
+        report_email = request.POST['report_email']
+        report_frequency = request.POST['report_frequency']
+        report_on = True if request.POST['report_on'] == 'on' else False
+        
+        product_info_email = request.POST['product_info_email']
+        product_info_frequency = request.POST['product_info_frequency']
+        product_info_on = True if request.POST['product_info_on'] == 'on' else False 
+        critical_product_amount = request.POST['critical_product_amount']
+        
+        site_config = SiteConfig.objects.get(pk=1)
+        site_config.report_email = report_email
+        site_config.report_frequency = report_frequency
+        site_config.report_on = report_on
+        site_config.product_info_email = product_info_email
+        site_config.product_info_frequency = product_info_frequency
+        site_config.product_info_on = product_info_on
+        site_config.critical_product_amount = critical_product_amount
+        site_config.save()
+
+    users = User.objects.all()
+    site_config = SiteConfig.objects.get(pk=1)
+    
+    report_email = site_config.report_email
+    report_frequency = site_config.report_frequency
+    report_on = site_config.report_on
+    
+    product_info_email = site_config.product_info_email
+    product_info_frequency = site_config.product_info_frequency
+    product_info_on = site_config.product_info_on
+    critical_product_amount = site_config.critical_product_amount
+    
+    
+    return render(request, 'trial/site_settings.html', {'users': users, 'report_email': report_email, 'report_frequency': report_frequency,
+                                                        'report_on': report_on, 'product_info_email': product_info_email, 'product_info_frequency': product_info_frequency,
+                                                        'product_info_on': product_info_on, 'critical_product_amount': critical_product_amount }) 
+
+@user_passes_test(lambda u: u.is_staff)
+def notifications(request):
+    notifs = Notification.objects.all()
+    return render(request, 'trial/notifications.html', {'Notifs': notifs})
+    
 @user_passes_test(lambda u: u.is_superuser)
 def createuser(request):
 
@@ -74,7 +116,7 @@ def createuser(request):
         if username and password1 and password2 and password1 == password2:
             user = User.objects.create_user(username=username, password=password1, is_staff=True)
             user.save()
-        return HttpResponse('<script type="text/javascript">window.opener.location.reload(); window.close();</script>')
+        return HttpResponse('<script type="text/javascript">window.opener.location.reload(); window.close(); </script>')
         
     return render(request, 'trial/createuser.html', {})
 
@@ -114,6 +156,7 @@ def success(request):
     return HttpResponse("Success!")
     
 def index(request):
+
     cursor = connection.cursor()
     cursor.execute('''SELECT trial_drug.id, trial_drug.name, trial_drugform.name, trial_drug.total_dosage, trial_manufacturer.name,
                     trial_category.name, trial_drug.amount, trial_drug.price
@@ -124,6 +167,15 @@ def index(request):
     d_list = [(el[0], el[1], el[2:]) for el in data_list]
     f_names = ['Product', 'Drug Form', 'Total Dosage', 'Manufacturer', 'Category', 'Amount', 'Price($)']
     docs = [d.__str__() for d in Doctor.objects.all()]
+    
+    #check for not sent mails
+    global_checker = GlobalChecker.objects.get(pk=1)
+    next_check_time = (global_checker.last_checked + timedelta(minutes=30)).timestamp()
+    now = timezone.now().timestamp()
+    
+    if now >= next_check_time:
+        global_checker.global_check()
+    
     return render(request, 'trial/index.html', {'d_list': d_list, 'f_names': f_names, 'doctors': docs})
 
 @user_passes_test(lambda u: u.is_staff)

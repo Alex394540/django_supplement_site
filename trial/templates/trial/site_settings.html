@@ -1,14 +1,73 @@
 <html>
 <head>
-
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
 </head>
 
 <body>
+
+<a name="top"></a>
+{% include "trial\navbar.html" %}
+
+    <h2> Accounts </h2>
     <ol>
     {% for u in users %}
         <li> {{ u.username }} </li>
     {% endfor %}
     </ol>
+    
+    <h2> Settings </h2>
+    <form action="/trial/site_settings/" method="POST">  
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="rep_email">Email for reports:</label>
+        <input type="email" class="form-control" id="rep_email" name='report_email' value="{{ report_email }}">
+      </div>
+      
+      <div class="form-group">
+        <label for="rep_freq">Report frequency (days):</label>
+        <input type="number" class="form-control" id="rep_freq" name="report_frequency" value="{{ report_frequency }}">
+      </div>
+      
+      <div class="form-group">
+        <p>Report sending:</p>
+        {% if report_on %}
+            <label><input type="radio" name="report_on" value="on" checked>On</label>
+            <label><input type="radio" name="report_on" value="off">Off</label>
+        {% else %}
+            <label><input type="radio" name="report_on" value="on">On</label>
+            <label><input type="radio" name="report_on" value="off" checked>Off</label>
+        {% endif %}            
+      </div>
+      
+      <div class="form-group">
+        <label for="prod_email">Email for product information:</label>
+        <input type="email" class="form-control" id="prod_email" name="product_info_email" value="{{ product_info_email }}">
+      </div>
+      
+      <div class="form-group">
+        <label for="prod_freq">Product info frequency:</label>
+        <input type="number" class="form-control" id="prod_freq" name="product_info_frequency" value="{{ product_info_frequency }}">
+      </div>
+      
+      <div class="form-group">
+        <p>Product information sending:</p>
+        {% if product_info_on %}
+            <label><input type="radio" name="product_info_on" value="on" checked>On</label>
+            <label><input type="radio" name="product_info_on" value="off">Off</label>
+        {% else %}
+            <label><input type="radio" name="product_info_on" value="on">On</label>
+            <label><input type="radio" name="product_info_on" value="off" checked>Off</label>   
+        {% endif %}            
+      </div>
+      
+      <div class="form-group">
+        <label for="crit_amount">Critical amount:</label>
+        <input type="number" class="form-control" id="crit_amount" name="critical_product_amount" value="{{ critical_product_amount }}">
+      </div>
+
+      <button type="submit" class="btn btn-default">Submit</button>
+    </form>
+    {% include "trial\footer.html" %}
 </body>
 
 </html>
