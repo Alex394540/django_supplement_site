@@ -17,6 +17,7 @@ class TestViews(TestCase):
         self.client = Client()
         logged_in = self.client.login(username=user.username, password='123456')
         self.assertTrue(logged_in)
+        gc = GlobalChecker.objects.create()
     
     #Quick access testing
     def test_access(self):

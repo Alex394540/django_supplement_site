@@ -28,4 +28,8 @@ urlpatterns = [
     path('add_doctor/', views.add_doctor, name='add_doctor'),
     path('site_settings/', views.site_settings, name='site_settings'),
     path('notifications/', views.notifications, name='notifications'),
+    path('change_pass/', views.change_pass, name='change_pass'),
+    path('ajax/user_info/', views.user_info, name='user_info'),
+    path('ajax/delete_user/', views.delete_user, name='delete_user'),
+    path('ajax/show_notifications/', views.show_notifications, name='show_notifications'),
 ]

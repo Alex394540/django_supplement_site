@@ -123,7 +123,7 @@ class Selling(models.Model):
         return "Selling " + self.drug_name + " " + "x" + str(self.amount) + " " + str(self.price) + "$ each"
         
     def str_with_date(self):
-        return self.date.strftime('%d-%m-%Y') + ": " + self.__str__()
+        return self.date.strftime('%m/%d/%Y') + ": " + self.__str__()
 
 
 class Order(models.Model):
@@ -183,7 +183,12 @@ class MailSender:
             server.ehlo()
             server.starttls()
             server.login(self.user, self.pwd)
-            server.sendmail(self.user, rcp, msg)
+            retval = server.sendmail(self.user, rcp, msg)
+            print(retval)
+            
+            if len(retval) != 0:
+                raise Exception('')
+                
             server.close()
             return True
             
@@ -199,7 +204,7 @@ class Notification(models.Model):
     datetime = models.DateTimeField(auto_now=True)
     message = models.TextField()
     warning = models.BooleanField()
-
+    seen = models.BooleanField(default=False)
 
 # Class for checking product
 class GlobalChecker(SingletonModel):
@@ -252,7 +257,7 @@ class GlobalChecker(SingletonModel):
         if products.count() == 0:
             return None
 
-        msg = "The amounts of next products are low:\n\n"
+        msg = "The amount of next products is low:\n\n"
         prod_list = products.values('name', 'amount', 'manufacturer')
         for p in prod_list:
             temp = 'Product name: ' + p['name'] + "\nManufacturer: " + Manufacturer.objects.get(pk=p['manufacturer']).name + "\nAmount: " + str(p['amount']) + "\n\n\n\n"
@@ -305,7 +310,7 @@ class GlobalChecker(SingletonModel):
                 self.last_product_info = timezone.now()
                 return True
 
-            rcp = SiteConfig.objects.get(pk=1).report_email
+            rcp = SiteConfig.objects.get(pk=1).product_info_email
             subj = 'Low amount of products'
             body = warn_str
             sender = MailSender()

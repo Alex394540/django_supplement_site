@@ -17,12 +17,12 @@ function resetInputs(doc=true, prod=true, date=true)
 
 function dateCheck(date) {
 	
-	var test = /\d\d\d\d-\d\d-\d\d/i.test(date);
+	var test = /\d\d\/\d\d\/\d\d\d\d/i.test(date);
 	if (test) {
-		var ar = date.split('-');
-		var year = parseInt(ar[0]);
-		var month = parseInt(ar[1]);
-		var day = parseInt(ar[2]);
+		var ar = date.split('/');
+		var month = parseInt(ar[0]);
+		var day = parseInt(ar[1]);
+		var year = parseInt(ar[2]);
 		return year > 1970 && year < 2038 && month > 0 && month < 13 && day > 0 && day < 32; 
 	}
 	return false;
@@ -78,10 +78,10 @@ function searchDate()
     resetInputs(true, true, false);
     
 	var start = $("#start_date_search").val();
-	start = (start == '') ? '1971-01-01' : start;
+	start = (start == '') ? '01/01/1971' : start;
 			
 	var end = $("#end_date_search").val();
-	end = (end == '') ? '2037-12-31' : end;
+	end = (end == '') ? '12/31/2037' : end;
 			
 	var test1 = dateCheck(start);
 	var test2 = dateCheck(end);

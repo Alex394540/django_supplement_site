@@ -1,0 +1,84 @@
+body {
+	background: url("/static/trial/images/stat_bg.jpg");
+}
+
+hr {
+    height: 1px;
+    clear: both;
+    background-color: black;
+}
+
+#container {
+    margin: 0 20% 0 20%;
+    background-color: #f4f6f9;
+}
+
+#select_user {
+    margin-right: 60%;
+    width: 10%;
+}
+
+#table_cont {
+    width: 60%;
+    float: left;
+    padding-right: 20%;
+}
+
+#psw_form {
+    width: 40%;
+    float: left;
+}
+
+#psw_form_inner {
+    margin-left: 5%;
+}
+
+#psw_change_btn {
+    margin-left: 33%;
+}
+
+#accs {
+    padding: 3% 0 3% 0;
+}
+
+#selection_container {
+    padding-bottom: 3%;
+}
+
+#config_header {
+    padding: 3% 0 3% 0;
+}
+
+#outer_form_wrap {
+    width: 40%;
+    margin: 0 auto;
+}
+
+#inner_form_wrap {
+    width: 80%;
+    margin: 0 auto;
+}
+
+#conf_sbmt {
+    width: 50%;
+    margin-left: 25%;
+}
+
+#anchor {
+    font-size: 15px;
+    text-align: center;
+    padding: 1% 0 1% 0;
+}
+
+.wrap {
+    margin: 0 2% 2% 2%;
+}
+
+.headers {
+    text-align: center;
+    font-family: Verdana;
+}
+
+.shortened_input {
+    width: 100%;
+}

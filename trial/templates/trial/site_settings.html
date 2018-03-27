@@ -1,6 +1,9 @@
 <html>
 <head>
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/trial/css/site_settings.css">
+    <script type="text/javascript" src="/static/trial/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="/static/trial/js/site_settings.js"></script>
 </head>
 
 <body>
@@ -8,66 +11,123 @@
 <a name="top"></a>
 {% include "trial\navbar.html" %}
 
-    <h2> Accounts </h2>
-    <ol>
-    {% for u in users %}
-        <li> {{ u.username }} </li>
-    {% endfor %}
-    </ol>
-    
-    <h2> Settings </h2>
-    <form action="/trial/site_settings/" method="POST">  
-      {% csrf_token %}
-      <div class="form-group">
-        <label for="rep_email">Email for reports:</label>
-        <input type="email" class="form-control" id="rep_email" name='report_email' value="{{ report_email }}">
-      </div>
-      
-      <div class="form-group">
-        <label for="rep_freq">Report frequency (days):</label>
-        <input type="number" class="form-control" id="rep_freq" name="report_frequency" value="{{ report_frequency }}">
-      </div>
-      
-      <div class="form-group">
-        <p>Report sending:</p>
-        {% if report_on %}
-            <label><input type="radio" name="report_on" value="on" checked>On</label>
-            <label><input type="radio" name="report_on" value="off">Off</label>
-        {% else %}
-            <label><input type="radio" name="report_on" value="on">On</label>
-            <label><input type="radio" name="report_on" value="off" checked>Off</label>
-        {% endif %}            
-      </div>
-      
-      <div class="form-group">
-        <label for="prod_email">Email for product information:</label>
-        <input type="email" class="form-control" id="prod_email" name="product_info_email" value="{{ product_info_email }}">
-      </div>
-      
-      <div class="form-group">
-        <label for="prod_freq">Product info frequency:</label>
-        <input type="number" class="form-control" id="prod_freq" name="product_info_frequency" value="{{ product_info_frequency }}">
-      </div>
-      
-      <div class="form-group">
-        <p>Product information sending:</p>
-        {% if product_info_on %}
-            <label><input type="radio" name="product_info_on" value="on" checked>On</label>
-            <label><input type="radio" name="product_info_on" value="off">Off</label>
-        {% else %}
-            <label><input type="radio" name="product_info_on" value="on">On</label>
-            <label><input type="radio" name="product_info_on" value="off" checked>Off</label>   
-        {% endif %}            
-      </div>
-      
-      <div class="form-group">
-        <label for="crit_amount">Critical amount:</label>
-        <input type="number" class="form-control" id="crit_amount" name="critical_product_amount" value="{{ critical_product_amount }}">
-      </div>
+<div id='container'>
 
-      <button type="submit" class="btn btn-default">Submit</button>
-    </form>
-    {% include "trial\footer.html" %}
+    <div class='wrap'>
+        <h1 class="headers" id="accs"> Accounts </h1>
+        
+        <div class="form-group" id="selection_container">
+            <form class="form-inline" role="form">
+                <label for="select_user">Select user:</label>
+                <select class="form-control" id="select_user" onChange="fillInfo(this);">
+                    <option selected="selected">{{ request.user.username }}</option>
+                    {% for u in users %}
+                        <option> {{ u.username }} </option>
+                    {% endfor %}
+                </select>
+                <button type="button" class="btn btn-danger" id="del_user" onclick="deleteUser()">Delete Account</button>
+            </form>
+        </div>
+            
+            <div id="user_container">
+                <div id="table_cont">
+                    <h3 class="headers"> User information </h3>
+                    <table class="table">
+                        <thead> <tr> <th></th> <th></th> </tr> </thead>
+                        <tbody id="info_table">
+                            <tr> <td>First name: </td> <td> {{ request.user.first_name }}</td> </tr>
+                            <tr> <td>Last name: </td> <td> {{ request.user.last_name }} </td> </tr>
+                            <tr> <td>Email: </td> <td> {{ request.user.email }} </td> </tr>
+                            <tr> <td>Group: </td> <td> Administrator </td> </tr>
+                            <tr> <td>Last login: </td> <td>{{ request.user.last_login }} </td> </tr>
+                            <tr> <td>Has joined: </td> <td>{{ request.user.date_joined }} </td> </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div id="psw_form">
+                    <h3 class="headers"> Change user password </h3>
+                    <p>&nbsp </p>
+                    <div id="psw_form_inner">
+                        <form action="/trial/change_pass/" method="POST">
+                            {% csrf_token %}
+                        <div class="form-group">
+                            <input type="text" class="form-control psw_item" value="{{ request.user.username }}" id="psw_username" name="username" readonly>
+                            <p>&nbsp </p>
+                            <input type="password" class="form-control psw_item" id="psw_password" name="password" placeholder="New Password">
+                            <p>&nbsp </p>
+                            <input type="password" class="form-control psw_item" id="psw_confirm" name="confirm" placeholder="Confirm Password">
+                            <p>&nbsp </p>
+                            <button type="submit" class="btn btn-warning" id="psw_change_btn">Change Password</button>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    <div class='wrap'>
+    <hr>
+        <h1 class="headers" id="config_header"> Configuration Settings </h1>
+        <div id="outer_form_wrap">
+            <div id="inner_form_wrap">
+                <form action="/trial/site_settings/" method="POST">  
+                  {% csrf_token %}
+                  <div class="form-group">
+                    <label for="rep_email">Email for reports:</label>
+                    <input type="email" class="form-control shortened_input" id="rep_email" name='report_email' value="{{ report_email }}">
+                  </div>
+                  
+                  <div class="form-group">
+                      <label for="rep_freq">Report frequency (days):</label>
+                      <input type="number" class="form-control shortened_input" id="rep_freq" name="report_frequency" value="{{ report_frequency }}">
+                  </div>
+                  
+                  <div class="form-group">
+                      <label>Report sending: &nbsp </label>
+                      {% if report_on %}
+                          <label><input type="radio" name="report_on" value="on" checked>On</label>
+                          <label><input type="radio" name="report_on" value="off">Off</label>
+                      {% else %}
+                          <label><input type="radio" name="report_on" value="on">On</label>
+                          <label><input type="radio" name="report_on" value="off" checked>Off</label>
+                      {% endif %}
+                  </div>
+                  
+                  <div class="form-group"> 
+                      <label for="prod_email">Email for product information:</label>
+                      <input type="email" class="form-control shortened_input" id="prod_email" name="product_info_email" value="{{ product_info_email }}">
+                  </div>
+                  
+                  <div class="form-group">
+                      <label for="prod_freq">Product info frequency:</label>
+                      <input type="number" class="form-control shortened_input" id="prod_freq" name="product_info_frequency" value="{{ product_info_frequency }}">
+                  </div>
+                  
+                  <div class="form-group">
+                      <label>Product information sending: &nbsp </label>
+                      {% if product_info_on %}
+                          <label><input type="radio" name="product_info_on" value="on" checked>On</label>
+                          <label><input type="radio" name="product_info_on" value="off">Off</label>
+                      {% else %}
+                          <label><input type="radio" name="product_info_on" value="on">On</label>
+                          <label><input type="radio" name="product_info_on" value="off" checked>Off</label>   
+                      {% endif %}
+                  </div>
+                  
+                  
+                  <div class="form-group">
+                    <label for="crit_amount">Critical amount:</label>
+                    <input type="number" class="form-control shortened_input" id="crit_amount" name="critical_product_amount" value="{{ critical_product_amount }}">
+                  </div>
+
+                  <button type="submit" class="btn btn-success" id="conf_sbmt">Save Changes</button>
+                </form>
+            </div>
+        </div>
+        <p id="anchor"> <a href="#top"> Top <span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span></a> </p>
+    </div>
+</div>
 </body>
 
 </html>

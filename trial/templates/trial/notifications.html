@@ -1,14 +1,40 @@
 <html>
 <head>
-
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
 </head>
 
 <body>
-    <ol>
-    {% for n in notifs %}
-        <li> {{ n.message }} </li>
-    {% endfor %}
-    </ol>
+<a name="top"></a>
+{% include "trial\navbar.html" %}
+
+<div id="container">
+    <div class="form-inline options_div">
+        <span id="s_opt"> <strong>Searching options: </strong></span>
+        <span id="n_seen">
+            <label for="not_seen">&nbsp Only not seen</label>
+            <input type="checkbox" id="not_seen">
+        </span>
+        <span id="warn">
+            <label for="warnings">&nbsp Only warnings</label>
+            <input type="checkbox" id="warnings">
+        </span>
+    </div>
+    <table class="table">
+    <thead>
+        <tr> <th>Notification time</th> <th>Message</th> <th>Warning</th> <th>Seen</th></tr>
+    </thead>
+    <tbody>
+        {% for n in notifications %}
+            <tr>
+                <td>{{ n.datetime }}</td>
+                <td>{{ n.message }}</td>
+                <td>{{ n.warning }}</td>
+                <td>{{ n.seen }} &nbsp <span class="glyphicon glyphicon-ok" aria-hidden="true" onclick=""></span> </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+</div>
 </body>
 
 </html>

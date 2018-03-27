@@ -83,7 +83,7 @@ def site_settings(request):
         site_config.critical_product_amount = critical_product_amount
         site_config.save()
 
-    users = User.objects.all()
+    users = User.objects.exclude(username=request.user.username)
     site_config = SiteConfig.objects.get(pk=1)
     
     report_email = site_config.report_email
@@ -98,12 +98,42 @@ def site_settings(request):
     
     return render(request, 'trial/site_settings.html', {'users': users, 'report_email': report_email, 'report_frequency': report_frequency,
                                                         'report_on': report_on, 'product_info_email': product_info_email, 'product_info_frequency': product_info_frequency,
-                                                        'product_info_on': product_info_on, 'critical_product_amount': critical_product_amount }) 
+                                                        'product_info_on': product_info_on, 'critical_product_amount': critical_product_amount })                                                        
+                                                        
+@user_passes_test(lambda u: u.is_superuser)                                                     
+def change_pass(request):
 
+    username = request.POST['username']
+    password = request.POST['password']
+    confirm = request.POST['confirm']
+    
+    if confirm == password and len(password) >= 6:
+        user = User.objects.filter(username=username).first()
+        user.set_password(password)
+        user.save()
+        return HttpResponseRedirect('/trial/site_settings/')
+    
+    return HttpResponse('<script type="text/javascript"> alert("Error! Please, check passwords!"); window.location="/trial/site_settings/"; </script>')
+    
+@user_passes_test(lambda u: u.is_superuser)
+def delete_user(request):
+    username = request.GET['username'] 
+    user = User.objects.get(username=username)
+    user.delete()
+    return HttpResponse(request)
+
+@user_passes_test(lambda u: u.is_superuser)
+def user_info(request):
+    user = request.GET['username']
+    obj = User.objects.get(username=user)
+    group = "Administrator" if obj.is_superuser else "Worker" if obj.is_staff else "Patient" 
+    vals = [obj.first_name, obj.last_name, obj.email, group, obj.last_login, obj.date_joined]
+    return JsonResponse(vals, safe=False)
+    
 @user_passes_test(lambda u: u.is_staff)
 def notifications(request):
     notifs = Notification.objects.all()
-    return render(request, 'trial/notifications.html', {'Notifs': notifs})
+    return render(request, 'trial/notifications.html', {'notifications': notifs})
     
 @user_passes_test(lambda u: u.is_superuser)
 def createuser(request):
@@ -362,8 +392,8 @@ def operations(request):
     sell_res = (Selling.objects.all().order_by('-date')).values()
 
     #Prepare data for displaying
-    sell = [(str(d['date']), d['drug_name'], d['amount'], "%.2f" % d['price'], "%.2f" % (d['price'] * d['amount']), Doctor.objects.get(pk=d['doctor_fk_id']).__str__()) for d in sell_res]
-    buy = [(str(d['date']), d['drug_name'], d['amount']) for d in buy_res]
+    sell = [((d['date']).strftime('%m/%d/%Y'), d['drug_name'], d['amount'], "%.2f" % d['price'], "%.2f" % (d['price'] * d['amount']), Doctor.objects.get(pk=d['doctor_fk_id']).__str__()) for d in sell_res]
+    buy = [((d['date']).strftime('%m/%d/%Y'), d['drug_name'], d['amount']) for d in buy_res]
 
     return render(request, 'trial/operations.html', {'sellings' : sell, 'buyings' : buy})
 
@@ -375,8 +405,8 @@ def filter_operations(request):
 
     if search_type == 'date':
         date1, date2 = search_prop.split('__')
-        y1, m1, d1 = map(lambda x: int(x), date1.split('-'))
-        y2, m2, d2 = map(lambda x: int(x), date2.split('-'))
+        m1, d1, y1 = map(lambda x: int(x), date1.split('/'))
+        m2, d2, y2 = map(lambda x: int(x), date2.split('/'))
         buy_res = Buying.objects.filter(date__gte=datetime(y1,m1,d1)).filter(date__lte=datetime(y2,m2,d2)).order_by('-date').values()
         sell_res = Selling.objects.filter(date__gte=datetime(y1,m1,d1)).filter(date__lte=datetime(y2,m2,d2)).order_by('-date').values()
         
@@ -422,6 +452,22 @@ def get_doctors(request):
     m_qset = Doctor.objects.all()
     m_list = [m.__str__() for m in m_qset.order_by('last_name')]
     return JsonResponse(m_list, safe=False)
+
+@user_passes_test(lambda u: u.is_staff)    
+def show_notifications(request):
+    
+    only_warning = request.GET['warning'] == '1'
+    only_not_seen = request.GET['not_seen'] == '1'
+    
+    notifs = Notification.objects.all()
+    
+    if only_warning:
+        notifs = notifs.filter(warning=True)
+    
+    if only_not_seen:
+        notifs = notifs.filter(seen=False)
+        
+    return render(request, 'trial/notifications.html', {'notifications': notifs})
     
 def product_page(request):
     
