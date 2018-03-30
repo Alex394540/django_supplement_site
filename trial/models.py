@@ -78,6 +78,7 @@ class Drug(models.Model):
     price = models.FloatField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     amount = models.IntegerField()
+    tracking_on = models.BooleanField(default=True)
 
     def get_fields(self):
         return [field.value_to_string(self) for field in Drug._meta.fields]
@@ -87,6 +88,7 @@ class Drug(models.Model):
 
 
 class Doctor(models.Model):
+
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
 
@@ -95,14 +97,18 @@ class Doctor(models.Model):
 
 
 class Patient(models.Model):
+
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     email = models.EmailField(max_length=100)
-    address = models.CharField(max_length=255, null=True)
+    phone = models.CharField(max_length=25, default="", null=True)
+    addit_phone = models.CharField(max_length=25, default="", null=True)
+    address = models.TextField(default="", null=True)
     user_fk = models.ForeignKey(User, default=None, on_delete=models.CASCADE)
 
 
 class Buying(models.Model):
+
     drug_name = models.CharField(max_length=255)
     date = models.DateField(auto_now_add=True)
     amount = models.IntegerField()
@@ -147,6 +153,9 @@ class NotSentMail(models.Model):
 
 class MailSender:
 
+    class Meta:
+        abstract = True
+
     user = 'neuronmedicalproducts@gmail.com'
     pwd = 'alexey63293'
 
@@ -184,7 +193,7 @@ class MailSender:
             server.starttls()
             server.login(self.user, self.pwd)
             retval = server.sendmail(self.user, rcp, msg)
-            print(retval)
+            print("Mail to {} was sent. Return value - {}".format(rcp, retval))
             
             if len(retval) != 0:
                 raise Exception('')
@@ -252,18 +261,19 @@ class GlobalChecker(SingletonModel):
 
         # Check if there is lack of some products
         critical_amount = SiteConfig.objects.get(pk=1).critical_product_amount
-        products = Drug.objects.filter(amount__lte=critical_amount)
+        products = Drug.objects.filter(amount__lte=critical_amount).filter(tracking_on=True)
 
         if products.count() == 0:
             return None
-
+        
+        ids = [x.pk for x in products]
         msg = "The amount of next products is low:\n\n"
         prod_list = products.values('name', 'amount', 'manufacturer')
         for p in prod_list:
             temp = 'Product name: ' + p['name'] + "\nManufacturer: " + Manufacturer.objects.get(pk=p['manufacturer']).name + "\nAmount: " + str(p['amount']) + "\n\n\n\n"
             msg += temp
         
-        return msg
+        return (ids, msg)
 
     # check if sale report should be sent
     def check_reports(self):
@@ -302,21 +312,33 @@ class GlobalChecker(SingletonModel):
         today = date.today()
         days = SiteConfig.objects.get(pk=1).product_info_frequency
         send_date = self.last_product_info + timedelta(days=days)
-
+        print("Send date: {}".format(send_date))
+        
         if today >= send_date:
-
-            warn_str = self.create_product_info()
-            if warn_str is None:
+            
+            print("Starting to create product_info message")
+            warn_prods = self.create_product_info()
+            if warn_prods is None:
+                print('There is no products with low amount, which was not sent before')
                 self.last_product_info = timezone.now()
                 return True
 
             rcp = SiteConfig.objects.get(pk=1).product_info_email
             subj = 'Low amount of products'
-            body = warn_str
+            ids, body = warn_prods
             sender = MailSender()
+            print('Starting to send email...')
             res = sender.send_email(rcp, subj, body)
             
+            print('Sent. Result = {}'.format(res))
+            
             if res:
+            
+                for id in ids:
+                    d = Drug.objects.get(pk=id)
+                    d.tracking_on = False
+                    d.save()
+                    
                 self.last_reported = timezone.now()
                 self.save()
             else:
@@ -347,7 +369,8 @@ class GlobalChecker(SingletonModel):
         
     # Checking if any reports should be sent
     def global_check(self):
-    
+        
+        print("Start global checking...")
         self.check_reports()
         self.check_product_info()
         self.check_not_sent_mails()

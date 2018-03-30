@@ -34,6 +34,13 @@
 				<a style="cursor: pointer;" onmouseover="this.style.color='yellow';" onmouseout="this.style.color='';">Create New Worker</a>
 			</li>
 		{% endif %}
+        
+        {% if user.is_authenticated and user.is_staff == False and user.is_superuser == False %}
+            <li class="active">
+				<a href='/trial/patient_account/' onmouseover="this.style.color='yellow';" onmouseout="this.style.color='';">My Account</a>
+			</li>
+        {% endif %}
+        
 		{% if user.is_authenticated == False %}
 		    <li class="active" onclick="centered_window('/trial/login/', 300, 350);">
 				<a style="cursor: pointer;" onmouseover="this.style.color='yellow';" onmouseout="this.style.color='';">Log In</a>

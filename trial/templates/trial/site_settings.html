@@ -54,9 +54,9 @@
                         <div class="form-group">
                             <input type="text" class="form-control psw_item" value="{{ request.user.username }}" id="psw_username" name="username" readonly>
                             <p>&nbsp </p>
-                            <input type="password" class="form-control psw_item" id="psw_password" name="password" placeholder="New Password">
+                            <input type="password" class="form-control psw_item" id="psw_password" name="password" placeholder="New Password" required>
                             <p>&nbsp </p>
-                            <input type="password" class="form-control psw_item" id="psw_confirm" name="confirm" placeholder="Confirm Password">
+                            <input type="password" class="form-control psw_item" id="psw_confirm" name="confirm" placeholder="Confirm Password" required>
                             <p>&nbsp </p>
                             <button type="submit" class="btn btn-warning" id="psw_change_btn">Change Password</button>
                         </div>

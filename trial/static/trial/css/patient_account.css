@@ -1,0 +1,21 @@
+body {
+	background: url("/static/trial/images/stat_bg.jpg");
+}
+
+.headers {
+    text-align: center;
+}
+
+#container {
+    width: 60%;
+    margin: 0 auto;
+}
+
+#info_form {
+    width: 35%;
+    margin: 0 auto;
+}
+
+#save_info {
+    width: 100%;
+}

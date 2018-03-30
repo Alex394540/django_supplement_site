@@ -9,7 +9,6 @@ from .models import *
 from datetime import datetime, timedelta
 from django.utils import timezone
 import json
-
 import traceback
 import sys
 
@@ -184,7 +183,25 @@ def add_drug(request):
     
 def success(request):
     return HttpResponse("Success!")
+
+@user_passes_test(lambda u: u.is_authenticated)    
+def patient_account(request):
+
+    user = request.user
+    patient = Patient.objects.get(user_fk=user)
+
+    if request.method == 'POST':
     
+        patient.first_name = request.POST['first_name']
+        patient.last_name = request.POST['last_name']
+        patient.email = request.POST['email']
+        patient.phone = request.POST['phone']
+        patient.addit_phone = request.POST['addit_phone']
+        patient.address = request.POST['address']
+        patient.save()
+        
+    return render(request, 'trial/patient_account.html', {'patient': patient}) 
+
 def index(request):
 
     cursor = connection.cursor()
@@ -241,6 +258,7 @@ def change_amount(request):
         
         #make some records to the sell/buy statistics
         if amount > 0:
+            drug.tracking_on = True
             oper = Buying.objects.create(drug_name = drug.name, amount = amount)
         elif amount < 0:
             doct = Doctor.objects.filter(last_name=l_name).filter(first_name=f_name).first()
