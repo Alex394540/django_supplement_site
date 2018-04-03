@@ -1,0 +1,46 @@
+<html>
+
+<head>
+<link rel="stylesheet" href="/static/trial/css/form.css">
+<link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+</head>
+
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12 col-md-12">
+            <div class="account-wall">
+			    <h2 style="text-align: center; font-family: Georgia, serif;"> Order Details </h2>
+                <form class="form-signin" action="/trial/order_details/" method="post" autocomplete='off'>
+				    {% csrf_token %}
+                    
+                    <input type="hidden" name="drug_id" value="{{ drug_id }}">
+                    <input type="hidden" name="amount" value="{{ amount }}">
+                    
+                    
+                    <label for="shipping_yes"> &nbsp &nbsp &nbsp &nbsp Shipping </label>
+                    <input type="radio" name="shipping" id="shipping_yes" value="Yes">
+                    
+                    <label for="shipping_no"> &nbsp &nbsp &nbsp &nbsp No shipping </label>
+                    <input type="radio" name="shipping" id="shipping_no" value="No">
+                    
+					<input type="tel" class="form-control" placeholder="Contact phone" id="phone" name="phone" value="{{ phone }}">
+                    
+                    <select class="form-control" name="doctor" id="doctor">
+                        <option selected="selected"> {{ doctor }} </option>
+                        {% for d in doc_list %}
+                            <option> {{ d }} </option>
+                        {% endfor %}
+                    </select>
+                    
+                    <input type="text" class="form-control" name="address" id="address" placeholder="Shipping Address" value="{{ address }}">	
+                    <label> &nbsp </label>                    
+                    <button class="btn btn-lg btn-primary btn-block" type="submit" style="font-family: Georgia, serif; background-color: rgb(18, 79, 65);">
+					      Confirm Order </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

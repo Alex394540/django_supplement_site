@@ -15,7 +15,13 @@
 	padding: 1px;
 	width: 40px;
 	height: 20px;
-	visibility: hidden;
+    visibility: hidden;
+}
+
+.user_input {
+    width: 50px;
+    padding: 1px;
+    height: 20px;
 }
 
 .hideIt, .plus, .minus {

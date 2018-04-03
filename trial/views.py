@@ -189,6 +189,11 @@ def patient_account(request):
 
     user = request.user
     patient = Patient.objects.get(user_fk=user)
+    doctor = Doctor.objects.filter(pk=patient.doctor_fk_id).first()
+    doc_list = Doctor.objects.exclude(pk=patient.doctor_fk_id)
+         
+    if not doctor:
+        doctor = ''
 
     if request.method == 'POST':
     
@@ -198,9 +203,17 @@ def patient_account(request):
         patient.phone = request.POST['phone']
         patient.addit_phone = request.POST['addit_phone']
         patient.address = request.POST['address']
+        
+        doctor = request.POST['doctor']
+        prefix, first, last = doctor.split(" ")
+        
+        doc = Doctor.objects.filter(last_name=last).filter(first_name=first).first()
+        if doc:
+            patient.doctor_fk_id = doc.pk
+        
         patient.save()
         
-    return render(request, 'trial/patient_account.html', {'patient': patient}) 
+    return render(request, 'trial/patient_account.html', { 'patient': patient, 'doctor': doctor, 'doc_list': doc_list }) 
 
 def index(request):
 
@@ -239,6 +252,64 @@ def add_doctor(request):
             
     return render(request, 'trial/add_doctor.html', {})
 
+@user_passes_test(lambda u: u.is_authenticated)
+def order_details(request):
+
+    user = request.user
+    patient = Patient.objects.get(user_fk_id=user.pk)
+    
+    drug_id = request.GET.get('drug_id', default='')
+    amount = int(request.GET.get('amount', default='0'))
+    
+    doctor = Doctor.objects.filter(pk=patient.doctor_fk_id).first()
+    doc_list = Doctor.objects.exclude(pk=patient.doctor_fk_id)
+    
+    if not doctor:
+        doctor = '*Select doctor'
+    
+    if request.method == 'POST':
+    
+        phone = request.POST['phone']
+        doctor = request.POST['doctor']
+        shipping = True if request.POST['shipping'] == 'Yes' else False
+        address = request.POST['address']
+        drug_id = request.POST['drug_id']
+        amount = request.POST['amount']
+        
+        if doctor != '*Select doctor':
+            prefix, first, last = doctor.split(' ')
+            doctor = Doctor.objects.filter(last_name=last).filter(first_name=first).first()
+            
+        #Create selling object and save an order
+        
+        drug = Drug.objects.get(pk=drug_id)
+        
+        drug_name = drug.name
+        price = drug.price
+        
+        drug.amount -= int(amount)
+        drug.save()
+        
+        selling = Selling.objects.create(drug_name=drug_name, amount=amount, price=price, doctor_fk_id=doctor.pk)
+        order = Order.objects.create(selling_fk_id=selling.pk, patient_fk_id=patient.pk, shipping=shipping, shipping_address=address)
+        
+        return HttpResponse('<script type="text/javascript">window.opener.location.reload(); window.close();</script>')
+    
+    else:
+        
+        drug = Drug.objects.get(pk=drug_id)
+        
+        if drug.amount < amount:
+            return HttpResponse("<script type='text/javascript'> alert('Wrong product amount was entered'); window.opener.location.reload(); window.close(); </script>")
+        
+        
+    return render(request, 'trial/order_details.html', { 'phone': patient.phone, 'doctor': doctor, 'address': patient.address, 
+                                                         'doc_list': doc_list, 'drug_id': drug_id, 'amount': amount })
+
+@user_passes_test(lambda u: u.is_staff)
+def orders(request):
+    orders = Order.objects.all()
+    return render(request, 'trial/orders.html', { 'orders': orders })
     
 @user_passes_test(lambda u: u.is_staff)  
 def change_amount(request):
@@ -447,7 +518,7 @@ def filter_operations(request):
    
     return JsonResponse([b_final_res, s_final_res], safe=False)
 
-@user_passes_test(lambda u: u.is_staff)  
+@user_passes_test(lambda u: u.is_authenticated)  
 def get_products(request):
     d_qset = Drug.objects.all()
     d_list = [d.name for d in d_qset.order_by('name')]

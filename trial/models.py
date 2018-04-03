@@ -104,6 +104,7 @@ class Patient(models.Model):
     phone = models.CharField(max_length=25, default="", null=True)
     addit_phone = models.CharField(max_length=25, default="", null=True)
     address = models.TextField(default="", null=True)
+    doctor_fk = models.ForeignKey(Doctor, null=True, on_delete=models.SET_NULL)
     user_fk = models.ForeignKey(User, default=None, on_delete=models.CASCADE)
 
 
@@ -137,8 +138,12 @@ class Order(models.Model):
     selling_fk = models.ForeignKey(Selling, on_delete=models.CASCADE)
     patient_fk = models.ForeignKey(Patient, null=True, on_delete=models.SET_NULL)
     shipping = models.BooleanField()
-    realization_time = models.DateTimeField()
-    discount = models.FloatField()
+    shipping_address = models.TextField(null=True)
+    order_time = models.DateTimeField(auto_now_add=True)
+    discount = models.FloatField(default=0)
+    
+    def __str__(self):
+        return "Order N" + str(self.pk) + ": " + self.order_time.strftime("%m/%d/%Y %H:%M:%S")
 
 
 class NotSentMail(models.Model):

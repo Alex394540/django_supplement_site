@@ -27,6 +27,13 @@
             <input type="tel" class="form-control" name="addit_phone" value="{{ patient.addit_phone }}">
             <label> Address: </label>
             <input type="text" class="form-control" name="address" value="{{ patient.address }}">
+            <label> Doctor: </label>
+            <select class="form-control" name="doctor">
+                <option selected="selected"> {{ doctor }} </option>
+                {% for d in doc_list %}
+                    <option> {{ d }} </option>
+                {% endfor %}
+            </select>
             <label> &nbsp </label>
             <button type="submit" class="btn btn-success" id="save_info" >Save Info</button>
         </div>

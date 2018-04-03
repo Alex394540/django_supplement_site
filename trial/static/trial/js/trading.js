@@ -8,13 +8,6 @@ function change_amount(id, coef) {
 	
 	var d = get_panel(id);
 	var inp = parseInt(d.value, 10);
-	
-	if (isNaN(inp)) 
-	{
-		alert('Please, type a number');
-		d.value = '';
-		return false;
-	}
     
     var f_name = '';
     var l_name = '';
@@ -75,3 +68,20 @@ function hide_input(id) {
 	    d.style.visibility = 'hidden';
 	}
 }
+
+function make_order(id) {
+    
+    var d = get_panel(id);
+    var inp = parseInt(d.value, 10);
+    
+    if (inp < 1) 
+    {
+        alert("Please, enter correct amount");
+        return false;
+    }
+    
+    var url = '/trial/order_details?' + 'drug_id=' + id + '&amount=' + inp;
+    
+    centered_window(url, 450, 450);
+    d.value = '';
+}    

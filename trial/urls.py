@@ -33,4 +33,6 @@ urlpatterns = [
     path('ajax/delete_user/', views.delete_user, name='delete_user'),
     path('ajax/show_notifications/', views.show_notifications, name='show_notifications'),
     path('patient_account/', views.patient_account, name='patient_account'),
+    path('order_details/', views.order_details, name='order_details'),
+    path('orders/', views.orders, name='orders'),
 ]
