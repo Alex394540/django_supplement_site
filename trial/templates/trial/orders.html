@@ -1,10 +1,68 @@
 <html>
 
-<head></head>
-<body>
+<head>
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/trial/css/orders.css">
+</head>
 
-    {% for order in orders %}
-    <p> {{ order }} </p>
-    {% endfor %}
+<body>
+{% include "trial\navbar.html" %}
+
+<script> 
+function mark_completed(pk) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/trial/mark_completed?pk=' + pk, true);
+    xhr.send();
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            window.location.reload();
+        }
+    }        
+}
+</script>
+
+<div id="container">
+
+<div id="search_panel">
+    
+    <form class="form-inline" action='/trial/orders/' method="post">
+        {% csrf_token %}
+        <label class="radio-inline"><input type="radio" name="show_option" value="all" checked="checked">Show all </label>
+        <label class="radio-inline"><input type="radio" name="show_option" value="not_completed"> Not completed only </label>
+        <label> &nbsp &nbsp </label>
+        <button type="submit" class="btn btn-primary"> Search <span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+    </form>
+    
+</div>
+
+<hr>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Selling</th>
+                <th>Patient name</th>
+                <th>Patient phone(s)</th>
+                <th>Shipping</th>
+                <th>Address</th>
+                <th>Completed</th>
+                <th>Mark as completed</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        {% for order in orders %}
+        <tr>
+            {% for field in order.0 %}
+                <td> {{ field }}</td>
+            {% endfor %}
+            <td> <button class="btn btn-success"><span class="glyphicon glyphicon-pencil" aria-hidden="true" onclick="mark_completed('{{ order.1 }}'); "></span></button> </td>
+        </tr>
+        {% endfor %}
+    
+        </tbody>
+    </table>
+</div>
+    
 </body>
 </html>

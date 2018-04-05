@@ -42,12 +42,12 @@ class SiteConfig(SingletonModel):
     report_email = models.EmailField(default='neuronmedical@gmail.com')
     report_frequency = models.IntegerField(default=7)
     report_on = models.BooleanField(default=True)
+    comission = models.IntegerField(default=10)
 
     product_info_email = models.EmailField(blank=True)
     product_info_frequency = models.IntegerField(default=1)
     product_info_on = models.BooleanField(default=True)
     critical_product_amount = models.IntegerField(default=5)
-
 
 class DrugForm(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -106,6 +106,9 @@ class Patient(models.Model):
     address = models.TextField(default="", null=True)
     doctor_fk = models.ForeignKey(Doctor, null=True, on_delete=models.SET_NULL)
     user_fk = models.ForeignKey(User, default=None, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return self.first_name + " " + self.last_name
 
 
 class Buying(models.Model):
@@ -140,7 +143,7 @@ class Order(models.Model):
     shipping = models.BooleanField()
     shipping_address = models.TextField(null=True)
     order_time = models.DateTimeField(auto_now_add=True)
-    discount = models.FloatField(default=0)
+    completed = models.BooleanField(default=False)
     
     def __str__(self):
         return "Order N" + str(self.pk) + ": " + self.order_time.strftime("%m/%d/%Y %H:%M:%S")
@@ -223,12 +226,14 @@ class Notification(models.Model):
 # Class for checking product
 class GlobalChecker(SingletonModel):
 
-    last_checked = models.DateTimeField(default=timezone.now())
+    last_checked = models.DateTimeField(default=timezone.now)
     last_reported = models.DateField(default=date(1990, 1, 1))
     last_product_info = models.DateField(default=date(1990, 1, 1))
 
     # create report with doctor's quotes
     def create_report(self):
+    
+        comission = SiteConfig.objects.get(pk=1).comission
 
         drs = Doctor.objects.all()
         sellings = Selling.objects.filter(date__gt=self.last_reported)
@@ -253,7 +258,8 @@ class GlobalChecker(SingletonModel):
             filenames.append(file)
             
             total = s.aggregate(total=models.Sum(models.F("price") * models.F("amount"), output_field=models.FloatField() ))['total']
-            overall = "Total sales = {}$\n".format(total)
+            
+            overall = "Total sales = {}$\nComission = {} * {} = {}$\n".format(total, total, comission/100, total * comission/100)
             f.write("\n========================================================\n" + overall)
             short_quote += "\n{}: ".format(dr.__str__()) + overall
             f.close()

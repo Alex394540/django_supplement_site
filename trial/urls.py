@@ -35,4 +35,5 @@ urlpatterns = [
     path('patient_account/', views.patient_account, name='patient_account'),
     path('order_details/', views.order_details, name='order_details'),
     path('orders/', views.orders, name='orders'),
+    path('mark_completed/', views.mark_completed, name='mark_completed'),
 ]

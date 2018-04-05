@@ -25,7 +25,6 @@
         </label>
     </div>
 
-
 <hr>
 <div id="table_container" style="margin-bottom: 7%;">
 	<table class="table table-striped">
@@ -44,7 +43,13 @@
 		</tr>
 		{% for drug in d_list %}
 		<tr>
-		    <td><a href="/trial/product_page?id={{drug.0}}">{{ drug.1 }}</a></td>
+		    <td>
+                {% if user.is_staff %} 
+                    <a href="/trial/product_page?id={{drug.0}}">{{ drug.1 }}</a>
+                {% else %}
+                    {{ drug.1 }}
+                {% endif %}
+            </td>
 			{% for drug_name in drug.2 %}
 				<td> {{ drug_name | prepend_dollars }} </td>
 			{% endfor %}

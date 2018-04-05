@@ -66,6 +66,7 @@ def site_settings(request):
         report_email = request.POST['report_email']
         report_frequency = request.POST['report_frequency']
         report_on = True if request.POST['report_on'] == 'on' else False
+        comission = request.POST['doc_comission']
         
         product_info_email = request.POST['product_info_email']
         product_info_frequency = request.POST['product_info_frequency']
@@ -76,6 +77,7 @@ def site_settings(request):
         site_config.report_email = report_email
         site_config.report_frequency = report_frequency
         site_config.report_on = report_on
+        site_config.comission = comission
         site_config.product_info_email = product_info_email
         site_config.product_info_frequency = product_info_frequency
         site_config.product_info_on = product_info_on
@@ -88,16 +90,16 @@ def site_settings(request):
     report_email = site_config.report_email
     report_frequency = site_config.report_frequency
     report_on = site_config.report_on
+    doc_comission = site_config.comission
     
     product_info_email = site_config.product_info_email
     product_info_frequency = site_config.product_info_frequency
     product_info_on = site_config.product_info_on
     critical_product_amount = site_config.critical_product_amount
     
-    
     return render(request, 'trial/site_settings.html', {'users': users, 'report_email': report_email, 'report_frequency': report_frequency,
                                                         'report_on': report_on, 'product_info_email': product_info_email, 'product_info_frequency': product_info_frequency,
-                                                        'product_info_on': product_info_on, 'critical_product_amount': critical_product_amount })                                                        
+                                                        'product_info_on': product_info_on, 'critical_product_amount': critical_product_amount, 'doc_comission': doc_comission })                                                        
                                                         
 @user_passes_test(lambda u: u.is_superuser)                                                     
 def change_pass(request):
@@ -212,6 +214,7 @@ def patient_account(request):
             patient.doctor_fk_id = doc.pk
         
         patient.save()
+        return HttpResponse('<script> alert("Settings are saved"); window.location="/trial/patient_account"; </script>')
         
     return render(request, 'trial/patient_account.html', { 'patient': patient, 'doctor': doctor, 'doc_list': doc_list }) 
 
@@ -308,8 +311,24 @@ def order_details(request):
 
 @user_passes_test(lambda u: u.is_staff)
 def orders(request):
-    orders = Order.objects.all()
+
+    if request.POST.get('show_option', '') == 'not_completed':
+        objects = Order.objects.filter(completed=False)
+    else:
+        objects = Order.objects.all()
+        
+    orders = [([ord.order_time, ord.selling_fk.__str__() + " (total {0:.2f}$)".format(ord.selling_fk.price * ord.selling_fk.amount), ord.patient_fk, 
+               ord.patient_fk.phone + ",     " + ord.patient_fk.addit_phone, 'Yes' if ord.shipping else 'No', ord.shipping_address, 'Yes' if ord.completed else 'No'], ord.pk) for ord in objects]
+               
     return render(request, 'trial/orders.html', { 'orders': orders })
+
+@user_passes_test(lambda u: u.is_staff)    
+def mark_completed(request):
+    pk = request.GET['pk']
+    order = Order.objects.get(pk=pk)
+    order.completed = True
+    order.save()
+    return HttpResponse('')
     
 @user_passes_test(lambda u: u.is_staff)  
 def change_amount(request):
@@ -557,7 +576,8 @@ def show_notifications(request):
         notifs = notifs.filter(seen=False)
         
     return render(request, 'trial/notifications.html', {'notifications': notifs})
-    
+
+@user_passes_test(lambda u: u.is_staff)    
 def product_page(request):
     
     id = request.GET.get('id', None)
