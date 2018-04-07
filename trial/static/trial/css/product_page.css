@@ -1,18 +1,16 @@
 #body {
-	background-color: #dee3ea;
+	background-image: url("/static/trial/images/stat_bg.jpg");
+    height: 89%;
 }
 
 #wrap {
-	margin: 0 auto;
+	margin: 5% auto;
 	width: 1000px;
-	background-color: white;
+	background-color: #fcfcfc;
 	position: relative;
-	min-height: 98.5%;
 }
 
 #container {
-	border-radius: 20px;
-	border: 1px solid black;
 	background-color: white;
 	margin: 0 auto;
     margin-top: 1%;
@@ -22,6 +20,10 @@
 .table {
 	font-size: 20px;
 	font-family: 'Archivo Narrow', sans-serif;
+}
+
+.headers {
+    text-align: center;
 }
 
 #del {
@@ -40,18 +42,23 @@
 	text-align: center;
 }
 
-#additive {
-	text-align: center;
+#product_image {
+    margin-top: 2%;
+    margin-left: 2%;
 }
 
 #bot {
 	float: right;
 	margin-right: 10%;
-	margin-top: 2%;
+    margin-top: 0%;
 }
 
 #back {
 	text-align: center;
+}
+
+.right {
+    float: right;
 }
 
 .rdonly {

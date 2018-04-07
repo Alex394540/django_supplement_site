@@ -1,4 +1,5 @@
 from django.db import models
+from django import forms
 from django.contrib.auth.models import User, Group, Permission
 from django.core.cache import cache
 from django.utils import timezone
@@ -79,6 +80,7 @@ class Drug(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     amount = models.IntegerField()
     tracking_on = models.BooleanField(default=True)
+    product_image = models.FilePathField(default=None, null=True)
 
     def get_fields(self):
         return [field.value_to_string(self) for field in Drug._meta.fields]
@@ -86,6 +88,9 @@ class Drug(models.Model):
     def __str__(self):
         return self.name
 
+class UploadFileForm(forms.Form):
+
+    file = forms.FileField()
 
 class Doctor(models.Model):
 
@@ -201,7 +206,6 @@ class MailSender:
             server.starttls()
             server.login(self.user, self.pwd)
             retval = server.sendmail(self.user, rcp, msg)
-            print("Mail to {} was sent. Return value - {}".format(rcp, retval))
             
             if len(retval) != 0:
                 raise Exception('')
@@ -259,7 +263,7 @@ class GlobalChecker(SingletonModel):
             
             total = s.aggregate(total=models.Sum(models.F("price") * models.F("amount"), output_field=models.FloatField() ))['total']
             
-            overall = "Total sales = {}$\nComission = {} * {} = {}$\n".format(total, total, comission/100, total * comission/100)
+            overall = "\nTotal sales = {}$\nComission = {} * {} = {0:.2f}$\n".format(total, total, comission/100, total * comission/100)
             f.write("\n========================================================\n" + overall)
             short_quote += "\n{}: ".format(dr.__str__()) + overall
             f.close()

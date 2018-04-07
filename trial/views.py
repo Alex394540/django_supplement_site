@@ -8,6 +8,7 @@ from django.db import connection
 from .models import *
 from datetime import datetime, timedelta
 from django.utils import timezone
+import os
 import json
 import traceback
 import sys
@@ -536,8 +537,7 @@ def filter_operations(request):
                    "%.2f" % (d['price'] * d['amount']),Doctor.objects.get(pk=d['doctor_fk_id']).__str__()] for d in sell_res]
    
     return JsonResponse([b_final_res, s_final_res], safe=False)
-
-@user_passes_test(lambda u: u.is_authenticated)  
+  
 def get_products(request):
     d_qset = Drug.objects.all()
     d_list = [d.name for d in d_qset.order_by('name')]
@@ -577,21 +577,57 @@ def show_notifications(request):
         
     return render(request, 'trial/notifications.html', {'notifications': notifs})
 
-@user_passes_test(lambda u: u.is_staff)    
+def handle_uploaded_file(f, dest_path):
+    with open(dest_path, 'wb+') as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)
+  
 def product_page(request):
-    
-    id = request.GET.get('id', None)
-    product = Drug.objects.get(pk=id)
-    fields = {
-              'id': id,
-              'name': product.name, 
-              'form': product.form, 
-              'total_dosage': product.total_dosage, 
-              'manufacturer': product.manufacturer, 
-              'price': "{num:0.2f}".format(num=product.price), 
-              'category': product.category,
-              'amount': product.amount
-            }
+
+    if request.method == 'POST':
+
+        id = request.POST['id']
+        form = UploadFileForm(request.POST, request.FILES)
+        
+        if form.is_valid():
+            file = request.FILES['file']
+            ext = os.path.splitext(os.path.basename(file.name))[1]
+            dest = 'trial\\static\\trial\\images\\product_images\\' + id + ext
+            handle_uploaded_file(request.FILES['file'], dest)
+            
+            drug = Drug.objects.get(pk=id)
+            
+            if drug.product_info and os.path.isfile(drug.product_info) and drug.product_info != dest:
+                os.remove(drug.product_info)
+
+            drug.product_image = dest
+            drug.save()
+            
+        return HttpResponseRedirect('/trial/product_page?id=' + id)
+
+    else:
+
+        id = request.GET.get('id', None)
+        product = Drug.objects.get(pk=id)
+        form = UploadFileForm()
+        
+        if product.product_image and os.path.isfile(product.product_image):
+            image_path = '/' + '/'.join(product.product_image.split('\\')[1:])
+        else:
+            image_path = "/static/trial/images/question.jpg"
+            
+        fields = {
+                  'form': form,
+                  'id': id,
+                  'name': product.name, 
+                  'drug_form': product.form, 
+                  'total_dosage': product.total_dosage, 
+                  'manufacturer': product.manufacturer, 
+                  'price': "{num:0.2f}".format(num=product.price), 
+                  'category': product.category,
+                  'amount': product.amount,
+                  'image_path': image_path
+                }
     return render(request, 'trial/product_page.html', fields)
 
 @user_passes_test(lambda u: u.is_staff)

@@ -8,49 +8,107 @@
 <body id="body">
 <div id="wrap">
     <div id="inner_wrap">
-	    <p> &nbsp </p>
 		<p> &nbsp </p>
 		<h1 id="main_header"> {{ name }} </h1>
-		<h3 id="additive"> (product info) </h3>
-	    <div id="container">
-		    <p> &nbsp </p>
-			<table class="table table-condensed table-bordered">
-			<tr class="rdonly">
-				<td>Product </td>
-				<td>{{ name }}</td>
-			</tr>
-			<tr>
-				<td>Form </td>
-				<td contenteditable="true" id="form" title="Click to edit">{{ form }}</td> 
-			</tr>
-			<tr>
-				<td>Total dosage </td>
-				<td contenteditable="true" id="total_dosage" title="Click to edit">{{ total_dosage }}</td> 
-			</tr>
-			<tr> 
-				<td>Manufacturer </td>
-				<td contenteditable="true" id="manufacturer" title="Click to edit">{{ manufacturer }}</td> 
-			</tr>
-			<tr>
-				<td>Category </td>
-				<td contenteditable="true" id="category" title="Click to edit">{{ category }}</td> 
-			</tr>
-			<tr>
-				<td>Price ($) </td>
-				<td contenteditable="true" id="price" title="Click to edit">{{ price }} </td>
-			</tr>
-			<tr class="rdonly">
-				<td>Amount </td>
-				<td>{{ amount }} </td>
-			</tr>
-			</table>
-			<button type="button" class="btn btn-primary" id="save" onclick="if (confirm('Are you sure?')) saveChanges('{{ id }}');">Save changes</button>
-			<button type="button" class="btn btn-danger" id="del" onclick="if (confirm('Are you sure?')) deleteDrug('{{ id }}');" >Delete this product</button>
-		</div>
-		<h4 id="bot"> *Click on the value to edit </h4>
-			<p> &nbsp </p>
-			<p> &nbsp </p>
-			<p> &nbsp </p>
+
+        <div class="row">
+            <div id="product_image" class="col-xs-6 col-md-3">
+                <h3 class="headers"> Product picture </h3>
+                <a href="#" class="thumbnail">
+                    <img src="{{ image_path }}" alt="No image">
+                </a>
+                {% if user.is_staff %}
+                    <form action="/trial/product_page/" method="POST" enctype="multipart/form-data">
+                        <input type="text" name="id" value="{{ id }}" hidden>
+                            {% csrf_token %}
+                            {{ form }}
+                        <button type="submit" class="btn btn-default">Submit</button>
+                    </form>
+                {% endif %}
+            </div>
+            <div class="col-md-8">
+            	<div id="container">
+                <p> &nbsp </p>
+                <table class="table table-condensed table-bordered">
+                    {% if user.is_staff %}
+                        <tr class="rdonly">
+                            <td>Product </td>
+                            <td>{{ name }}</td>
+                        </tr>
+                    
+                        <tr>
+                            <td>Form </td>
+                            <td contenteditable="true" id="form" title="Click to edit">{{ drug_form }}</td> 
+                        </tr>
+                        <tr>
+                            <td>Total dosage </td>
+                            <td contenteditable="true" id="total_dosage" title="Click to edit">{{ total_dosage }}</td> 
+                        </tr>
+                        <tr> 
+                            <td>Manufacturer </td>
+                            <td contenteditable="true" id="manufacturer" title="Click to edit">{{ manufacturer }}</td> 
+                        </tr>
+                        <tr>
+                            <td>Category </td>
+                            <td contenteditable="true" id="category" title="Click to edit">{{ category }}</td> 
+                        </tr>
+                        <tr>
+                            <td>Price ($) </td>
+                            <td contenteditable="true" id="price" title="Click to edit">{{ price }} </td>
+                        </tr>
+                        
+                        <tr class="rdonly">
+                            <td>Amount </td>
+                            <td>{{ amount }} </td>
+                        </tr>
+                        
+                    {% else %}
+                        
+                        <tr>
+                            <td>Product </td>
+                            <td>{{ name }}</td>
+                        </tr>
+                    
+                        <tr>
+                            <td>Form </td>
+                            <td id="form">{{ drug_form }}</td> 
+                        </tr>
+                        <tr>
+                            <td>Total dosage </td>
+                            <td id="total_dosage">{{ total_dosage }}</td> 
+                        </tr>
+                        <tr> 
+                            <td>Manufacturer </td>
+                            <td id="manufacturer">{{ manufacturer }}</td> 
+                        </tr>
+                        <tr>
+                            <td>Category </td>
+                            <td id="category">{{ category }}</td> 
+                        </tr>
+                        <tr>
+                            <td>Price ($) </td>
+                            <td id="price">{{ price }} </td>
+                        </tr>
+                                        
+                        <tr>
+                            <td>Amount </td>
+                            <td>{{ amount }} </td>
+                        </tr>
+                        
+                    {% endif %}
+                    
+                    </table>
+                    {% if user.is_staff %}
+                        <button type="button" class="btn btn-primary" id="save" onclick="if (confirm('Are you sure?')) saveChanges('{{ id }}');">Save changes</button>
+                        <button type="button" class="btn btn-danger" id="del" onclick="if (confirm('Are you sure?')) deleteDrug('{{ id }}');" >Delete this product</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        {% if user.is_staff %}
+		    <h2 id="bot"><small>*Click on the value to edit</small></h2>
+        {% endif %}
 			<p> &nbsp </p>
 		<h2 id="back"><a href="/trial/">Back to main page</a></h2>
 	</div>

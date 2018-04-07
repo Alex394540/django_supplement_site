@@ -1,8 +1,7 @@
-09-03-2018: Selling TestDrug2 x14 29.99$ each
-09-03-2018: Selling TestDrug1 x9 19.99$ each
-09-03-2018: Selling TestDrug3 x7 39.99$ each
-12-03-2018: Selling GreenEnergy x12 23.99$ each
-13-03-2018: Selling TestDrug2 x21 29.99$ each
-13-03-2018: Selling Multivitamin Power Complex x11 49.99$ each
+04/03/2018: Selling GreenEnergy x2 23.99$ each
+04/03/2018: Selling Multivitamin Power Complex x2 49.99$ each
+04/04/2018: Selling TestDrug5 x7 56.99$ each
+04/04/2018: Selling TestDrug2 x8 29.99$ each
 ========================================================
-Total sales = 2347.26$
+Total sales = 786.81$
+Comission = 786.81 * 0.13 = 102.28529999999999$
