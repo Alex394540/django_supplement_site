@@ -31,9 +31,9 @@ urlpatterns = [
     path('change_pass/', views.change_pass, name='change_pass'),
     path('ajax/user_info/', views.user_info, name='user_info'),
     path('ajax/delete_user/', views.delete_user, name='delete_user'),
-    path('ajax/show_notifications/', views.show_notifications, name='show_notifications'),
     path('patient_account/', views.patient_account, name='patient_account'),
     path('order_details/', views.order_details, name='order_details'),
     path('orders/', views.orders, name='orders'),
     path('mark_completed/', views.mark_completed, name='mark_completed'),
+    path('mark_seen/', views.mark_seen, name='mark_seen'),
 ]

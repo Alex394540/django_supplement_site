@@ -2,7 +2,6 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db import connection
 from .models import *
@@ -10,8 +9,15 @@ from datetime import datetime, timedelta
 from django.utils import timezone
 import os
 import json
-import traceback
-import sys
+import logging
+
+stdlogger = logging.getLogger(__name__)
+dbalogger = logging.getLogger('dba')
+
+
+def log_create(obj):
+    dbalogger.info('{} was created: {}'.format(obj.__class__.__name__, obj.__str__()))
+
 
 #Get all months that are between d1 and d2
 def get_months_list(d1, d2):
@@ -19,21 +25,28 @@ def get_months_list(d1, d2):
     res_list = ['{}-{num:02d}'.format(y, num=m) for y in range(y1, y2 + 1) for m in range(m1 if y == y1 else 1, m2 + 1 if y == y2 else 13)]   
     return res_list
 
+
 @login_required
 def log_out(request):
     logout(request)
-    return HttpResponseRedirect('/trial/')
+    return HttpResponseRedirect('/')
+
 
 def log_in(request):
 
     if request.method == 'POST':
+        
         username = request.POST['username']
         raw_password = request.POST['password']
         user = authenticate(username=username, password=raw_password)
-        login(request, user)
-        return HttpResponse('<script type="text/javascript">window.opener.location.reload(); window.close();</script>')
+        
+        if user is not None:
+            login(request, user)
+            stdlogger.info("{} has just entered".format(user.__str__()))
+            return HttpResponse('<script type="text/javascript">window.opener.location.reload(); window.close();</script>')
 
     return render(request, 'trial/login.html', {})
+
 
 def register(request):
     
@@ -47,18 +60,25 @@ def register(request):
         email = request.POST['email']
         
         if username and password1 and password2 and password1 == password2 and first_name and last_name and email:
+        
             user = User.objects.create_user(username=username, password=password1, first_name=first_name, last_name=last_name, email=email)
-            user.save()
+            log_create(user)
             
             pat = Patient.objects.create(first_name=first_name, last_name=last_name, email=email, user_fk=user)
-            pat.save()
+            log_create(pat)
         
             user = authenticate(username=username, password=password1)
             login(request, user)
+            
+            #notificate about registration
+            notif = Notification.objects.create(message="New patient {} was registered".format(pat.__str__()), warning=False)
+            log_create(notif)
+            
             return HttpResponse('<script type="text/javascript">window.opener.location.reload(); window.close();</script>')
 
     return render(request, 'trial/register.html', {})
-    
+
+
 @user_passes_test(lambda u: u.is_superuser)
 def site_settings(request):
 
@@ -84,6 +104,8 @@ def site_settings(request):
         site_config.product_info_on = product_info_on
         site_config.critical_product_amount = critical_product_amount
         site_config.save()
+        
+        dbalogger.warning("Site settings was changed!")
 
     users = User.objects.exclude(username=request.user.username)
     site_config = SiteConfig.objects.get(pk=1)
@@ -101,7 +123,8 @@ def site_settings(request):
     return render(request, 'trial/site_settings.html', {'users': users, 'report_email': report_email, 'report_frequency': report_frequency,
                                                         'report_on': report_on, 'product_info_email': product_info_email, 'product_info_frequency': product_info_frequency,
                                                         'product_info_on': product_info_on, 'critical_product_amount': critical_product_amount, 'doc_comission': doc_comission })                                                        
-                                                        
+
+
 @user_passes_test(lambda u: u.is_superuser)                                                     
 def change_pass(request):
 
@@ -113,16 +136,20 @@ def change_pass(request):
         user = User.objects.filter(username=username).first()
         user.set_password(password)
         user.save()
-        return HttpResponseRedirect('/trial/site_settings/')
+        dbalogger.info('Password of user {} was changed'.format(user.__str__()))
+        return HttpResponseRedirect('/site_settings/')
     
-    return HttpResponse('<script type="text/javascript"> alert("Error! Please, check passwords!"); window.location="/trial/site_settings/"; </script>')
-    
+    return HttpResponse('<script type="text/javascript"> alert("Error! Please, check the passwords - they should be equal and should have length more, than 6."); window.location="/site_settings/"; </script>')
+
+
 @user_passes_test(lambda u: u.is_superuser)
 def delete_user(request):
     username = request.GET['username'] 
-    user = User.objects.get(username=username)
+    user = User.objects.get(username=username)    
+    dbalogger.warning('User {} was deleted!'.format(user.__str__()))   
     user.delete()
     return HttpResponse(request)
+
 
 @user_passes_test(lambda u: u.is_superuser)
 def user_info(request):
@@ -131,12 +158,22 @@ def user_info(request):
     group = "Administrator" if obj.is_superuser else "Worker" if obj.is_staff else "Patient" 
     vals = [obj.first_name, obj.last_name, obj.email, group, obj.last_login, obj.date_joined]
     return JsonResponse(vals, safe=False)
-    
+
+
 @user_passes_test(lambda u: u.is_staff)
 def notifications(request):
-    notifs = Notification.objects.all()
-    return render(request, 'trial/notifications.html', {'notifications': notifs})
-    
+
+    only_warning = request.POST.get('warnings', 'off') == 'on'
+    only_not_seen = request.POST.get('not_seen', 'off') == 'on'
+
+    notifs = Notification.objects.all().order_by('-datetime')
+
+    filtered = notifs.filter(warning=True) if only_warning else notifs
+    final_filtered = filtered.filter(seen=False) if only_not_seen else filtered
+
+    return render(request, 'trial/notifications.html', {'notifications': final_filtered })
+
+
 @user_passes_test(lambda u: u.is_superuser)
 def createuser(request):
 
@@ -148,9 +185,11 @@ def createuser(request):
         if username and password1 and password2 and password1 == password2:
             user = User.objects.create_user(username=username, password=password1, is_staff=True)
             user.save()
+            dbalogger.info("New worker was created: {}".format(user.__str__()))
         return HttpResponse('<script type="text/javascript">window.opener.location.reload(); window.close(); </script>')
         
     return render(request, 'trial/createuser.html', {})
+
 
 @user_passes_test(lambda u: u.is_staff)
 def add_drug(request):
@@ -169,23 +208,21 @@ def add_drug(request):
             
         if not c:
             c = Category.objects.create(name = category)
-            c.save()
+            log_create(c)
         if not f:
             f = DrugForm.objects.create(name = drugform)
-            f.save()
+            log_create(f)
         if not m:
             m = Manufacturer.objects.create(name = manufacturer)
-            m.save()
+            log_create(m)
             
         if name and c and f and total_dosage and m and price > 0:
             drug = Drug.objects.create(name = name, total_dosage = total_dosage, price = price, form = f, manufacturer = m, category = c, amount = 0)
-            drug.save()
+            log_create(drug)
         return HttpResponse('<script type="text/javascript">window.opener.location.reload(); window.close();</script>')
             
     return render(request, 'trial/add_drug.html', {})
-    
-def success(request):
-    return HttpResponse("Success!")
+
 
 @user_passes_test(lambda u: u.is_authenticated)    
 def patient_account(request):
@@ -194,18 +231,20 @@ def patient_account(request):
     patient = Patient.objects.get(user_fk=user)
     doctor = Doctor.objects.filter(pk=patient.doctor_fk_id).first()
     doc_list = Doctor.objects.exclude(pk=patient.doctor_fk_id)
+    
+    orders = Order.objects.filter(patient_fk=patient).order_by('-order_time')[:10]
          
     if not doctor:
         doctor = ''
 
     if request.method == 'POST':
     
-        patient.first_name = request.POST['first_name']
-        patient.last_name = request.POST['last_name']
-        patient.email = request.POST['email']
-        patient.phone = request.POST['phone']
-        patient.addit_phone = request.POST['addit_phone']
-        patient.address = request.POST['address']
+        patient.first_name = request.POST['first_name'].strip()
+        patient.last_name = request.POST['last_name'].strip()
+        patient.email = request.POST['email'].strip()
+        patient.phone = request.POST['phone'].strip()
+        patient.addit_phone = request.POST['addit_phone'].strip()
+        patient.address = request.POST['address'].strip()
         
         doctor = request.POST['doctor']
         prefix, first, last = doctor.split(" ")
@@ -215,32 +254,36 @@ def patient_account(request):
             patient.doctor_fk_id = doc.pk
         
         patient.save()
-        return HttpResponse('<script> alert("Settings are saved"); window.location="/trial/patient_account"; </script>')
+        dbalogger.info("Setting for patient {} was changed".format(patient.__str__()))
         
-    return render(request, 'trial/patient_account.html', { 'patient': patient, 'doctor': doctor, 'doc_list': doc_list }) 
+        return HttpResponse('<script> alert("Settings are saved"); window.location="/patient_account"; </script>')
+        
+    return render(request, 'trial/patient_account.html', {'patient': patient, 'doctor': doctor, 'doc_list': doc_list, 'orders': orders})
+
 
 def index(request):
 
-    cursor = connection.cursor()
-    cursor.execute('''SELECT trial_drug.id, trial_drug.name, trial_drugform.name, trial_drug.total_dosage, trial_manufacturer.name,
-                    trial_category.name, trial_drug.amount, trial_drug.price
-                    FROM trial_drug LEFT JOIN trial_category ON trial_drug.category_id = trial_category.id 
-                    LEFT JOIN trial_manufacturer ON trial_drug.manufacturer_id = trial_manufacturer.id
-                    LEFT JOIN trial_drugform ON trial_drug.form_id = trial_drugform.id ORDER BY trial_drug.name ASC''')
-    data_list = cursor.fetchall()
-    d_list = [(el[0], el[1], el[2:]) for el in data_list]
-    f_names = ['Product', 'Drug Form', 'Total Dosage', 'Manufacturer', 'Category', 'Amount', 'Price($)']
-    docs = [d.__str__() for d in Doctor.objects.all()]
-    
-    #check for not sent mails
-    global_checker = GlobalChecker.objects.get(pk=1)
-    next_check_time = (global_checker.last_checked + timedelta(minutes=30)).timestamp()
-    now = timezone.now().timestamp()
-    
-    if now >= next_check_time:
-        global_checker.global_check()
-    
-    return render(request, 'trial/index.html', {'d_list': d_list, 'f_names': f_names, 'doctors': docs})
+    with connection.cursor() as cursor:
+        cursor.execute('''SELECT trial_drug.id, trial_drug.name, trial_drug.product_image, trial_drugform.name, trial_drug.total_dosage, trial_manufacturer.name,
+                        trial_category.name, trial_drug.amount, trial_drug.price
+                        FROM trial_drug LEFT JOIN trial_category ON trial_drug.category_id = trial_category.id 
+                        LEFT JOIN trial_manufacturer ON trial_drug.manufacturer_id = trial_manufacturer.id
+                        LEFT JOIN trial_drugform ON trial_drug.form_id = trial_drugform.id ORDER BY trial_drug.name ASC''')
+        data_list = cursor.fetchall()
+        d_list = [(el[0], el[1], '/' + '/'.join(el[2].split('\\',1)[1:]) if el[2] and os.path.isfile(el[2]) else "/static/trial/images/question.jpg", el[3:]) for el in data_list]
+        f_names = ['Product', 'Drug Form', 'Total Dosage', 'Manufacturer', 'Category', 'Amount', 'Price($)']
+        docs = [d.__str__() for d in Doctor.objects.all()]
+        
+        #check for not sent mails
+        global_checker = GlobalChecker.objects.get(pk=1)
+        next_check_time = (global_checker.last_checked + timedelta(minutes=30)).timestamp()
+        now = timezone.now().timestamp()
+        
+        if now >= next_check_time:
+            global_checker.global_check()
+        
+        return render(request, 'trial/index.html', {'d_list': d_list, 'f_names': f_names, 'doctors': docs})
+
 
 @user_passes_test(lambda u: u.is_staff)
 def add_doctor(request):
@@ -250,11 +293,12 @@ def add_doctor(request):
         last_name = request.POST['last_name']
         
         d = Doctor.objects.create(first_name=first_name, last_name=last_name)
-        d.save()
+        log_create(d)
         
         return HttpResponse('<script type="text/javascript">window.opener.location.reload(); window.close();</script>')
             
     return render(request, 'trial/add_doctor.html', {})
+
 
 @user_passes_test(lambda u: u.is_authenticated)
 def order_details(request):
@@ -283,9 +327,18 @@ def order_details(request):
         if doctor != '*Select doctor':
             prefix, first, last = doctor.split(' ')
             doctor = Doctor.objects.filter(last_name=last).filter(first_name=first).first()
-            
-        #Create selling object and save an order
         
+        #If the patient didn't add phone number before, add it now     
+        if not patient.phone:
+            patient.phone = phone
+            patient.save()
+            dbalogger.info("Phone was added for patient {}".format(patient.__str__()))
+        elif patient.phone != phone and not patient.addit_phone:
+            patient.addit_phone = phone
+            patient.save()
+            dbalogger.info("Additional phone was added for patient {}".format(patient.__str__()))          
+            
+        #Create selling object and save an order        
         drug = Drug.objects.get(pk=drug_id)
         
         drug_name = drug.name
@@ -295,7 +348,16 @@ def order_details(request):
         drug.save()
         
         selling = Selling.objects.create(drug_name=drug_name, amount=amount, price=price, doctor_fk_id=doctor.pk)
+        log_create(selling)
+        
         order = Order.objects.create(selling_fk_id=selling.pk, patient_fk_id=patient.pk, shipping=shipping, shipping_address=address)
+        log_create(order)
+        
+        #Set new_orders flag to true
+        gc = GlobalChecker.objects.get(pk=1)
+        gc.new_orders = True
+        gc.save()
+        dbalogger.info("'New orders' value was set to True")
         
         return HttpResponse('<script type="text/javascript">window.opener.location.reload(); window.close();</script>')
     
@@ -305,23 +367,29 @@ def order_details(request):
         
         if drug.amount < amount:
             return HttpResponse("<script type='text/javascript'> alert('Wrong product amount was entered'); window.opener.location.reload(); window.close(); </script>")
-        
-        
+
     return render(request, 'trial/order_details.html', { 'phone': patient.phone, 'doctor': doctor, 'address': patient.address, 
                                                          'doc_list': doc_list, 'drug_id': drug_id, 'amount': amount })
+
 
 @user_passes_test(lambda u: u.is_staff)
 def orders(request):
 
     if request.POST.get('show_option', '') == 'not_completed':
-        objects = Order.objects.filter(completed=False)
+        objects = Order.objects.filter(completed=False).order_by('-order_time')
     else:
-        objects = Order.objects.all()
+        gc = GlobalChecker.objects.get(pk=1)
+        gc.new_orders = False
+        gc.save()
+        dbalogger.info("'New orders' value was set to False")
+        
+        objects = Order.objects.all().order_by('-order_time')
         
     orders = [([ord.order_time, ord.selling_fk.__str__() + " (total {0:.2f}$)".format(ord.selling_fk.price * ord.selling_fk.amount), ord.patient_fk, 
                ord.patient_fk.phone + ",     " + ord.patient_fk.addit_phone, 'Yes' if ord.shipping else 'No', ord.shipping_address, 'Yes' if ord.completed else 'No'], ord.pk) for ord in objects]
                
     return render(request, 'trial/orders.html', { 'orders': orders })
+
 
 @user_passes_test(lambda u: u.is_staff)    
 def mark_completed(request):
@@ -329,7 +397,19 @@ def mark_completed(request):
     order = Order.objects.get(pk=pk)
     order.completed = True
     order.save()
+    dbalogger.info("Order {} was marked as completed".format(order.__str__()))
     return HttpResponse('')
+
+
+@user_passes_test(lambda u: u.is_staff)    
+def mark_seen(request):
+    pk = request.GET['pk']
+    notif = Notification.objects.get(pk=pk)
+    notif.seen = True
+    notif.save()
+    dbalogger.info("Notification {} was marked as seen".format(notif.__str__()))
+    return HttpResponse('')
+    
     
 @user_passes_test(lambda u: u.is_staff)  
 def change_amount(request):
@@ -350,16 +430,23 @@ def change_amount(request):
         #make some records to the sell/buy statistics
         if amount > 0:
             drug.tracking_on = True
+            dbalogger.info("The amount of drug {} was increased".format(drug.__str__()))
+            dbalogger.info("{} is tracked again now".format(drug.__str__()))
             oper = Buying.objects.create(drug_name = drug.name, amount = amount)
+            
         elif amount < 0:
+            dbalogger.info("The amount of drug {} was decreased".format(drug.__str__()))  
             doct = Doctor.objects.filter(last_name=l_name).filter(first_name=f_name).first()
             oper = Selling.objects.create(drug_name = drug.name, amount = -1 * amount, price = drug.price, doctor_fk=doct)
         
         oper.save()
-        drug.save()        
+        log_create(oper)
+        
+        drug.save()
         data['performed'] = True
     
     return JsonResponse(data)
+
 
 @user_passes_test(lambda u: u.is_staff)
 def stat_prod(request):
@@ -381,6 +468,7 @@ def stat_prod(request):
         t_prods.append([p.name, p.cost])
     
     return JsonResponse(t_prods, safe=False)
+
 
 @user_passes_test(lambda u: u.is_staff)
 def stat_month(request):
@@ -422,6 +510,7 @@ def stat_month(request):
 
     return JsonResponse(t_months, safe=False)
 
+
 @user_passes_test(lambda u: u.is_staff)
 def stat_categ(request):
     year = request.GET['year']
@@ -440,6 +529,7 @@ def stat_categ(request):
         t_cat.append([c.n, round(c.cost, 2)])
         
     return JsonResponse(t_cat, safe=False)
+
 
 @user_passes_test(lambda u: u.is_staff)   
 def statistics(request):
@@ -470,7 +560,7 @@ def statistics(request):
         else:
             month_to_cost[m.d] = m.cost
     
-    for k,v in month_to_cost.items():
+    for k, v in month_to_cost.items():
         t_months.append([k, round(v, 2)])
     
     by_months = json.dumps(t_months)
@@ -494,6 +584,7 @@ def statistics(request):
     
     return render(request, 'trial/statistics.html', {'all_products' : all_products, 'by_months': by_months, 'by_category': by_category, 'd_list': d_list, 'c_list': c_list })
 
+
 @user_passes_test(lambda u: u.is_staff)
 def operations(request):
     
@@ -505,6 +596,7 @@ def operations(request):
     buy = [((d['date']).strftime('%m/%d/%Y'), d['drug_name'], d['amount']) for d in buy_res]
 
     return render(request, 'trial/operations.html', {'sellings' : sell, 'buyings' : buy})
+
 
 @user_passes_test(lambda u: u.is_staff)
 def filter_operations(request):
@@ -537,17 +629,20 @@ def filter_operations(request):
                    "%.2f" % (d['price'] * d['amount']),Doctor.objects.get(pk=d['doctor_fk_id']).__str__()] for d in sell_res]
    
     return JsonResponse([b_final_res, s_final_res], safe=False)
-  
+
+
 def get_products(request):
     d_qset = Drug.objects.all()
     d_list = [d.name for d in d_qset.order_by('name')]
     return JsonResponse(d_list, safe=False)
-   
+
+
 @user_passes_test(lambda u: u.is_staff)   
 def get_categories(request):
     c_qset = Category.objects.all()
     c_list = [c.name for c in c_qset.order_by('name')]
     return JsonResponse(c_list, safe=False)
+
 
 @user_passes_test(lambda u: u.is_staff)
 def get_manufacturers(request):
@@ -555,37 +650,24 @@ def get_manufacturers(request):
     m_list = [m.name for m in m_qset.order_by('name')]
     return JsonResponse(m_list, safe=False)
 
+
 @user_passes_test(lambda u: u.is_staff)
 def get_doctors(request):
     m_qset = Doctor.objects.all()
     m_list = [m.__str__() for m in m_qset.order_by('last_name')]
     return JsonResponse(m_list, safe=False)
 
-@user_passes_test(lambda u: u.is_staff)    
-def show_notifications(request):
-    
-    only_warning = request.GET['warning'] == '1'
-    only_not_seen = request.GET['not_seen'] == '1'
-    
-    notifs = Notification.objects.all()
-    
-    if only_warning:
-        notifs = notifs.filter(warning=True)
-    
-    if only_not_seen:
-        notifs = notifs.filter(seen=False)
-        
-    return render(request, 'trial/notifications.html', {'notifications': notifs})
 
 def handle_uploaded_file(f, dest_path):
     with open(dest_path, 'wb+') as destination:
         for chunk in f.chunks():
             destination.write(chunk)
-  
+
+
 def product_page(request):
 
     if request.method == 'POST':
-
+         
         id = request.POST['id']
         form = UploadFileForm(request.POST, request.FILES)
         
@@ -597,13 +679,15 @@ def product_page(request):
             
             drug = Drug.objects.get(pk=id)
             
-            if drug.product_info and os.path.isfile(drug.product_info) and drug.product_info != dest:
-                os.remove(drug.product_info)
+            if drug.product_image and os.path.isfile(drug.product_image) and drug.product_image != dest:
+                os.remove(drug.product_image)
 
             drug.product_image = dest
             drug.save()
             
-        return HttpResponseRedirect('/trial/product_page?id=' + id)
+            dbalogger.info("New image is uploaded for drug {}".format(drug.__str__()))
+            
+        return HttpResponseRedirect('/product_page?id=' + id)
 
     else:
 
@@ -630,14 +714,17 @@ def product_page(request):
                 }
     return render(request, 'trial/product_page.html', fields)
 
+
 @user_passes_test(lambda u: u.is_staff)
 def delete_product(request):
     
     id = request.GET.get('id', None)
     product = Drug.objects.get(pk=id)
     product.delete()
+    dbalogger.warning("Product {} was deleted".format(product.__str__()))
 
     return HttpResponse("OK")
+
 
 @user_passes_test(lambda u: u.is_staff)
 def save_changes(request):
@@ -655,13 +742,13 @@ def save_changes(request):
             
     if not c:
         c = Category.objects.create(name = category)
-        c.save()
+        log_create(c)
     if not f:
-        f = DrugForm.objects.create(name = drugform)
-        f.save()
+        f = DrugForm.objects.create(name = form)
+        log_create(f)
     if not m:
         m = Manufacturer.objects.create(name = manufacturer)
-        m.save()
+        log_create(m)
     
     product = Drug.objects.get(pk=id)
     product.form = f
@@ -671,5 +758,6 @@ def save_changes(request):
     product.price = float(price)
     
     product.save()
+    dbalogger.info("Product {} was changed".format(product.__str__()))
     
     return HttpResponse("OK")

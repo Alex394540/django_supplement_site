@@ -2,7 +2,7 @@
     width: 100%;
 	height: auto;
 	min-height: 92.4%;
-    position:relative;
+    position: relative;
 	overflow: auto;
 }
 
@@ -35,4 +35,8 @@
 
 #leftdiv {
     margin-left: 2%;
+}
+
+#mobile_only {
+    display: none;
 }

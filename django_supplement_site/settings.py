@@ -25,7 +25,10 @@ SECRET_KEY = '3tmt5+kh3f=d3*)235k=1k)%%7hfnx0())88rui98780h2#8kh'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+
+ADMINS = (('Administrator', 'alibaba394540@gmail.com'))
+MANAGERS = ADMINS
 
 
 # Application definition
@@ -103,6 +106,80 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'formatters': {
+        'simple': {
+            'format': '[%(asctime)s] %(levelname)s %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        },
+        'verbose': {
+            'format': '[%(asctime)s] %(levelname)s [%(name)s.%(funcName)s:%(lineno)d] %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'development_logfile': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs\\dev.log'),
+            'formatter': 'verbose'
+        },
+        'production_logfile': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs\\production.log'),
+            'maxBytes' : 1024*1024*100,
+            'backupCount' : 5,
+            'formatter': 'simple'
+        },
+        'dba_logfile': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs\\dba.log'),
+            'maxBytes' : 1024*1024*10,
+            'formatter': 'simple'
+        },
+    },
+    'root': {
+        'level': 'DEBUG',
+        'handlers': ['console'],
+    },  
+    'loggers': {
+        'trial': {
+            'handlers': ['development_logfile','production_logfile'],
+         },
+        'dba': {
+            'handlers': ['dba_logfile'],
+        },
+        'django': {
+            'handlers': ['development_logfile','production_logfile'],
+        },
+        'py.warnings': {
+            'handlers': ['development_logfile'],
+        },
+    }
+}
 
 
 # Internationalization

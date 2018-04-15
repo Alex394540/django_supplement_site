@@ -1,10 +1,10 @@
 function findProduct() {
-
+    
 	var product = $('#product_name').val();
 	var table = $('.table tr').find('td:first');
 		
 	for (var i = 0; i < table.length; i++) {
-		if (table[i].textContent == product) {
+		if (table[i].textContent.trim() == product.trim()) {
 			var $scrollTo = $('tr:nth-of-type(' + (i + 2) + ')');
 
 			var previous = $scrollTo.css('background-color');
@@ -30,7 +30,7 @@ $(document).ready(function() {
     
     function showProd()  
 	{
-		$.getJSON('/trial/ajax/show_prod/', function( prods ) {
+		$.getJSON('/ajax/show_prod/', function( prods ) {
 			ans = prods.map(x => '<option>' + x + '</option>');
 			ans.forEach(function(i) {
 		        $('#products').append(i);

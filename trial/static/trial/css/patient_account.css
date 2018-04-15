@@ -4,18 +4,84 @@ body {
 
 .headers {
     text-align: center;
+    font-family: 'Graduate', cursive;
 }
 
 #container {
-    width: 60%;
+    width: 100%;
     margin: 0 auto;
+	height: auto;
+	min-height: 92.4%;
+    position: relative;
+	overflow: auto;
+    font-family: 'Archivo Narrow', sans-serif;
 }
 
 #info_form {
-    width: 35%;
-    margin: 0 auto;
+    margin-right: 10%;
+    margin-left: 10%;
+    width: 30%;
+    float: left;
+    height: 92.4%;
+}
+
+#order_box {
+    width: 50%;
+    float: right;
+    height: auto;
+    font-size: 1.6em;
+}
+
+#ord_list {
+    margin-top: 10%;
+    margin-left: 15%;
+    margin-right: 5%;
+    width: 80%;
 }
 
 #save_info {
     width: 100%;
+}
+
+#mobile_only {
+    display: none;
+}
+
+@media only screen and (max-width: 800px) {
+    
+    #footer {
+        font-size: 0.8em;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    
+    .headers {
+        font-size: 23px;
+        text-align: center;
+        font-family: 'Graduate', cursive;
+    }
+    
+    #info_form {
+        width: 48%;
+        margin: 0 0 7% 2%;
+    }
+    
+    #order_box {
+        width: 50%;
+        margin: 0 0 20% 0;
+        font-size: 0.9em;        
+    }
+    
+    #mobile_only {
+        display: inline;
+    }
+    
+    .navbar-nav {
+        display: none;
+    }
+    
+    #footer {
+        font-size: 0.6em;
+    }
 }

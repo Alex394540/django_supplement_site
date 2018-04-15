@@ -2,6 +2,7 @@
 
 <head>
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Archivo+Narrow" rel="stylesheet">
     <link rel="stylesheet" href="/static/trial/css/orders.css">
 </head>
 
@@ -11,7 +12,7 @@
 <script> 
 function mark_completed(pk) {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/trial/mark_completed?pk=' + pk, true);
+    xhr.open('GET', '/mark_completed?pk=' + pk, true);
     xhr.send();
     xhr.onreadystatechange = function() {
         if (xhr.readyState == 4 && xhr.status == 200) {
@@ -25,7 +26,7 @@ function mark_completed(pk) {
 
 <div id="search_panel">
     
-    <form class="form-inline" action='/trial/orders/' method="post">
+    <form class="form-inline" action='/orders/' method="post">
         {% csrf_token %}
         <label class="radio-inline"><input type="radio" name="show_option" value="all" checked="checked">Show all </label>
         <label class="radio-inline"><input type="radio" name="show_option" value="not_completed"> Not completed only </label>
@@ -46,7 +47,7 @@ function mark_completed(pk) {
                 <th>Shipping</th>
                 <th>Address</th>
                 <th>Completed</th>
-                <th>Mark as completed</th>
+                <th class="th_align">Mark as completed</th>
             </tr>
         </thead>
         <tbody>
@@ -56,7 +57,7 @@ function mark_completed(pk) {
             {% for field in order.0 %}
                 <td> {{ field }}</td>
             {% endfor %}
-            <td> <button class="btn btn-success"><span class="glyphicon glyphicon-pencil" aria-hidden="true" onclick="mark_completed('{{ order.1 }}'); "></span></button> </td>
+            <td class="td_align"> <button class="btn btn-success"><span class="glyphicon glyphicon-pencil" aria-hidden="true" onclick="mark_completed('{{ order.1 }}'); "></span></button> </td>
         </tr>
         {% endfor %}
     

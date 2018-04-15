@@ -54,7 +54,7 @@ function resetChart(el, chart_type, month = false, is_category=false) {
 		var btn = div.getElementsByTagName('button')[0];
 		var year = parseInt(btn.value);
 		var data = "?year=" + year + "&month=" + month +"&chart_type=" + chart_type;
-		var url = chart_type == 'by_categ' ? '/trial/ajax/get_categ/' : '/trial/ajax/all_prod/'; 
+		var url = chart_type == 'by_categ' ? '/ajax/get_categ/' : '/ajax/all_prod/'; 
 		var title_name = chart_type == 'all_prod' ? 'All products ' : 'Sales by category ';
 		var full_title = title_name + (month == '00' ? year : year + '-' + month);
 	}
@@ -62,7 +62,7 @@ function resetChart(el, chart_type, month = false, is_category=false) {
 	{
 		var type = is_category ? 'category' : 'product';
 		var data = '?type=' + type + '&name=' + el;
-		var url = '/trial/ajax/stat_month/';
+		var url = '/ajax/stat_month/';
 		var by_months_id = is_category ? '#sel2' : '#sel1';
 		
 		//Reset default value of other select

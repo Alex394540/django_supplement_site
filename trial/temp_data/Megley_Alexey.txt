@@ -1,4 +1,6 @@
-04/04/2018: Selling Turbo Vitamin Complex x5 49.99$ each
+04/09/2018: Selling TestDrug2 x5 29.99$ each
+04/14/2018: Selling TestDrug9 x14 34.99$ each
 ========================================================
-Total sales = 249.95$
-Comission = 249.95 * 0.13 = 32.4935$
+
+Total sales = 639.81$
+Comission = 639.81 * 0.13 = 83.18$

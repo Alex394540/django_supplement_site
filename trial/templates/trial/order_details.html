@@ -11,7 +11,7 @@
         <div class="col-sm-12 col-md-12">
             <div class="account-wall">
 			    <h2 style="text-align: center; font-family: Georgia, serif;"> Order Details </h2>
-                <form class="form-signin" action="/trial/order_details/" method="post" autocomplete='off'>
+                <form class="form-signin" action="/order_details/" method="post" autocomplete='off'>
 				    {% csrf_token %}
                     
                     <input type="hidden" name="drug_id" value="{{ drug_id }}">

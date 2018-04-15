@@ -1,6 +1,22 @@
+#container {
+    font-family: 'Archivo Narrow', sans-serif;
+}
+
 #search_panel {
     margin: 1% 0% 0% 75%;
     font-size: 17px;
+}
+
+#mobile_only {
+    display: none;
+}
+
+.th_align {
+    text-align: center;
+}
+
+.td_align { 
+    text-align: center;
 }
 
 hr {

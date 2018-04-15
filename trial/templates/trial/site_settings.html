@@ -49,7 +49,7 @@
                     <h3 class="headers"> Change user password </h3>
                     <p>&nbsp </p>
                     <div id="psw_form_inner">
-                        <form action="/trial/change_pass/" method="POST">
+                        <form action="/change_pass/" method="POST">
                             {% csrf_token %}
                         <div class="form-group">
                             <input type="text" class="form-control psw_item" value="{{ request.user.username }}" id="psw_username" name="username" readonly>
@@ -71,7 +71,7 @@
         <h1 class="headers" id="config_header"> Configuration Settings </h1>
         <div id="outer_form_wrap">
             <div id="inner_form_wrap">
-                <form action="/trial/site_settings/" method="POST">  
+                <form action="/site_settings/" method="POST">  
                   {% csrf_token %}
                   <div class="form-group">
                     <label for="rep_email">Email for reports:</label>

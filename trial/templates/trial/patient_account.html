@@ -1,6 +1,8 @@
 <html>
 
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Archivo+Narrow|Graduate" rel="stylesheet">
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/trial/css/patient_account.css">
 </head>
@@ -9,10 +11,10 @@
 <a name="top"></a>
 {% include "trial\navbar.html" %}
 <div id="container">
-    <h2 class="headers"> Credentials </h3>
     
     <div id="info_form">
-    <form action="/trial/patient_account/" method="POST">
+    <h1 class="headers"> My settings </h1>
+    <form action="/patient_account/" method="POST">
         {% csrf_token %}
         <div class="form-group">
             <label> First Name: </label>
@@ -39,7 +41,17 @@
         </div>
     </form>
     </div>
-</div>
+    
+    <div id="order_box">
+    <h1 class="headers"> Last orders </h1>
+        <ul id="ord_list">
+        {% for order in orders %}
+            <li> {{ order }} </li>
+        {% endfor %}
+        </ul>
+    </div>
+
 {% include "trial\footer.html" %}
+</div>
 </body>
 </html>

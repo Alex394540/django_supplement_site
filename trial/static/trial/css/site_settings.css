@@ -70,6 +70,10 @@ hr {
     padding: 1% 0 1% 0;
 }
 
+#mobile_only {
+    display: none;
+}
+
 .wrap {
     margin: 0 2% 2% 2%;
 }

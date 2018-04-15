@@ -80,7 +80,7 @@ function make_order(id) {
         return false;
     }
     
-    var url = '/trial/order_details?' + 'drug_id=' + id + '&amount=' + inp;
+    var url = '/order_details?' + 'drug_id=' + id + '&amount=' + inp;
     
     centered_window(url, 450, 450);
     d.value = '';

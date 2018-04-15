@@ -49,7 +49,7 @@ function searchDoctor()
     
 	var d_name = $("#doctor_name").val().split(' ');
     var doctor = d_name[1] + "_" + d_name[2];
-	var url = '/trial/ajax/filter_operations?search_type=doc_name&search_prop=' + doctor;
+	var url = '/ajax/filter_operations?search_type=doc_name&search_prop=' + doctor;
 		
 	$.getJSON(url, function( res ) {
         displayResult(res[1], '#sellTable');
@@ -63,7 +63,7 @@ function searchName()
     resetInputs(true, false, true);
     
 	var product = $("#product_name").val();
-	var url = '/trial/ajax/filter_operations?search_type=name&search_prop=' + product;
+	var url = '/ajax/filter_operations?search_type=name&search_prop=' + product;
 
 	$.getJSON(url, function( res ) {
 		displayResult(res[0], '#buyTable');
@@ -93,7 +93,7 @@ function searchDate()
 			
 	var date = start + '__' + end;
 			
-	var url = '/trial/ajax/filter_operations?search_type=date&search_prop=' + date;
+	var url = '/ajax/filter_operations?search_type=date&search_prop=' + date;
 		
 	$.getJSON(url, function( res ) {
 		displayResult(res[0], '#buyTable');
@@ -105,7 +105,7 @@ $(document).ready(function() {
 	
 	function showProd()  
 	{
-		$.getJSON('/trial/ajax/show_prod/', function( prods ) {
+		$.getJSON('/ajax/show_prod/', function( prods ) {
 			ans = prods.map(x => '<option>' + x + '</option>');
 			ans.forEach(function(i) {
 		        $('#products').append(i);
@@ -115,7 +115,7 @@ $(document).ready(function() {
     
     function showDocs()
     {
-		$.getJSON('/trial/ajax/show_docs/', function( docs ) {
+		$.getJSON('/ajax/show_docs/', function( docs ) {
 			ans = docs.map(x => '<option>' + x + '</option>');
 			ans.forEach(function(i) {
 		        $('#doctors').append(i);

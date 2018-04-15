@@ -2,7 +2,7 @@ function fillInfo(elem) {
     
     var user = elem.options[elem.selectedIndex].value;
     $('#psw_username').val(user);
-    var url = '/trial/ajax/user_info?username=' + user;    
+    var url = '/ajax/user_info?username=' + user;    
     
     $.getJSON(url, function(res) {
         var rows = $('#info_table tr');
@@ -20,7 +20,7 @@ function deleteUser() {
     
     var result = confirm("Do you really want to delete user '" + user +  "' ?");
     if (result) {
-        var url = '/trial/ajax/delete_user?username=' + user;
+        var url = '/ajax/delete_user?username=' + user;
         
         $.ajax(url).done(function() {
                 window.location.reload();

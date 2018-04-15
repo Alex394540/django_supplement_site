@@ -5,7 +5,8 @@
 
 #wrap {
 	margin: 5% auto;
-	width: 1000px;
+    width: 60%;
+	max-width: 1000px;
 	background-color: #fcfcfc;
 	position: relative;
 }
@@ -72,4 +73,20 @@ td {
 
 tr td:nth-of-type(1) {
 	font-weight: bold;
+}
+
+@media only screen and (max-width: 800px) {
+    
+    #wrap {
+        width: 90%;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    
+    #wrap {
+        margin: 0 0 0 0;
+        width: 100%;
+        min-width: 480px;
+    }
 }

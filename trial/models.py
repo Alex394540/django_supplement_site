@@ -11,6 +11,22 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from mimetypes import guess_type
 from email.encoders import encode_base64
+import logging
+
+stdlogger = logging.getLogger(__name__)
+dbalogger = logging.getLogger('dba')
+
+
+def log_create(obj):
+    dbalogger.info('{} was created: {}'.format(obj.__class__.__name__, obj.__str__()))
+    
+
+def get_user_info(self):
+    return self.first_name + ' ' + self.last_name + ' (username=' + self.username + ')'
+
+
+User.add_to_class("__str__", get_user_info)
+
 
 # Singleton class
 class SingletonModel(models.Model):
@@ -50,7 +66,9 @@ class SiteConfig(SingletonModel):
     product_info_on = models.BooleanField(default=True)
     critical_product_amount = models.IntegerField(default=5)
 
+
 class DrugForm(models.Model):
+
     name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
@@ -58,6 +76,7 @@ class DrugForm(models.Model):
 
 
 class Manufacturer(models.Model):
+
     name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
@@ -65,6 +84,7 @@ class Manufacturer(models.Model):
 
 
 class Category(models.Model):
+
     name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
@@ -72,6 +92,7 @@ class Category(models.Model):
 
 
 class Drug(models.Model):
+
     name = models.CharField(max_length=255, unique=True)
     form = models.ForeignKey(DrugForm, on_delete=models.CASCADE)
     total_dosage = models.CharField(max_length=100)
@@ -88,9 +109,11 @@ class Drug(models.Model):
     def __str__(self):
         return self.name
 
+
 class UploadFileForm(forms.Form):
 
     file = forms.FileField()
+
 
 class Doctor(models.Model):
 
@@ -139,6 +162,9 @@ class Selling(models.Model):
         
     def str_with_date(self):
         return self.date.strftime('%m/%d/%Y') + ": " + self.__str__()
+        
+    def str_patient_view(self):
+        return "{}:  {} x{} {}$ each. Total: {:.2f}$".format(self.date.strftime('%m/%d/%Y'), self.drug_name, self.amount, self.price, self.amount * self.price)
 
 
 class Order(models.Model):
@@ -151,7 +177,7 @@ class Order(models.Model):
     completed = models.BooleanField(default=False)
     
     def __str__(self):
-        return "Order N" + str(self.pk) + ": " + self.order_time.strftime("%m/%d/%Y %H:%M:%S")
+        return self.selling_fk.str_patient_view()
 
 
 class NotSentMail(models.Model):
@@ -162,6 +188,10 @@ class NotSentMail(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     attachments = models.TextField()
     send_error = models.BooleanField()
+    
+    def __str__(self):
+        return "NotSentMail object ({}). Time is {}: recipient - {} with subject {} and with attachments: {}".format("Send error" if self.send_error else "Without send error",
+                self.created.strftime('%m/%d/%Y'), self.recipient, self.subject, self.attachments)        
 
 
 class MailSender:
@@ -174,7 +204,10 @@ class MailSender:
 
     # Send email or add it to not sent
     def send_email(self, rcp, subj, body, attachments=None):
-
+        
+        stdlogger.info("Entering send_email method")
+        stdlogger.info("Recipient = {}, subj = {}, attachments = {}".format(rcp, subj, "True" if attachments else "False"))
+        
         import smtplib
 
         email = MIMEMultipart()
@@ -208,15 +241,18 @@ class MailSender:
             retval = server.sendmail(self.user, rcp, msg)
             
             if len(retval) != 0:
-                raise Exception('')
+                raise Exception('Error occurs while sending email!')
                 
             server.close()
             return True
             
-        except:
+        except Exception as e:        
+        
+            stdlogger.error("Error in send_email method, stack {}".format(e))
             atts = '' if not attachments else '%%'.join(attachments)
             nsr = NotSentMail.objects.create(recipient=rcp, subject=subj, body=body, attachments=atts, send_error=True)
-            nsr.save()
+            log_create(nsr)
+            
             return False
 
             
@@ -226,6 +262,10 @@ class Notification(models.Model):
     message = models.TextField()
     warning = models.BooleanField()
     seen = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return "Notification object. Time = {}. Warning = {}.".format(self.datetime.strftime('%/m/%d/%y %h/%m/%s'), 'True' if warning else 'False')
+
 
 # Class for checking product
 class GlobalChecker(SingletonModel):
@@ -233,9 +273,12 @@ class GlobalChecker(SingletonModel):
     last_checked = models.DateTimeField(default=timezone.now)
     last_reported = models.DateField(default=date(1990, 1, 1))
     last_product_info = models.DateField(default=date(1990, 1, 1))
+    new_orders = models.BooleanField(default=False)
 
     # create report with doctor's quotes
     def create_report(self):
+    
+        stdlogger.info("Entering create_report method")
     
         comission = SiteConfig.objects.get(pk=1).comission
 
@@ -261,18 +304,19 @@ class GlobalChecker(SingletonModel):
             f.write(text)
             filenames.append(file)
             
-            total = s.aggregate(total=models.Sum(models.F("price") * models.F("amount"), output_field=models.FloatField() ))['total']
+            total = s.aggregate(total=models.Sum(models.F("price") * models.F("amount"), output_field=models.FloatField()))['total']
             
-            overall = "\nTotal sales = {}$\nComission = {} * {} = {0:.2f}$\n".format(total, total, comission/100, total * comission/100)
+            overall = "\nTotal sales = {0}$\nComission = {1} * {2} = {3:.2f}$\n".format(total, total, comission/100, total * comission/100)
             f.write("\n========================================================\n" + overall)
             short_quote += "\n{}: ".format(dr.__str__()) + overall
             f.close()
             
         return (filenames, short_quote)
 
-    
     # create warning about some product low amount
     def create_product_info(self):
+    
+        stdlogger.info("Entering create_product_info method")
 
         # Check if there is lack of some products
         critical_amount = SiteConfig.objects.get(pk=1).critical_product_amount
@@ -288,7 +332,7 @@ class GlobalChecker(SingletonModel):
             temp = 'Product name: ' + p['name'] + "\nManufacturer: " + Manufacturer.objects.get(pk=p['manufacturer']).name + "\nAmount: " + str(p['amount']) + "\n\n\n\n"
             msg += temp
         
-        return (ids, msg)
+        return ids, msg
 
     # check if sale report should be sent
     def check_reports(self):
@@ -296,6 +340,7 @@ class GlobalChecker(SingletonModel):
         report_on = SiteConfig.objects.get(pk=1).report_on
         if not report_on:
             self.last_reported = timezone.now()
+            self.save()
             return True
         
         today = date.today()
@@ -312,40 +357,45 @@ class GlobalChecker(SingletonModel):
             
             if res:
                 self.last_reported = timezone.now()
+                dbalogger.info("'Last reported' value was reset")
                 self.save()
             else:
-                Notification.objects.create(message="Error while sending report! Please, check if there is report email set properly in site configuration.", warning=True)
+                notif = Notification.objects.create(message="Error while sending report! Please, check your internet connection and report_email correctness in site configuration.", warning=True)
+                log_create(notif)
 
-    # check if product warn should be sent
+    #check if product warn should be sent
     def check_product_info(self):
-
-        product_info_on = SiteConfig.objects.get(pk=1).product_info_on
-        if not product_info_on:
-            self.last_product_info = timezone.now()
-            return True
-
+        
         today = date.today()
         days = SiteConfig.objects.get(pk=1).product_info_frequency
         send_date = self.last_product_info + timedelta(days=days)
-        print("Send date: {}".format(send_date))
         
         if today >= send_date:
             
-            print("Starting to create product_info message")
             warn_prods = self.create_product_info()
             if warn_prods is None:
-                print('There is no products with low amount, which was not sent before')
                 self.last_product_info = timezone.now()
+                self.save()
+                dbalogger.info("'Last_product_info' value was reset")
                 return True
 
             rcp = SiteConfig.objects.get(pk=1).product_info_email
             subj = 'Low amount of products'
             ids, body = warn_prods
-            sender = MailSender()
-            print('Starting to send email...')
-            res = sender.send_email(rcp, subj, body)
             
-            print('Sent. Result = {}'.format(res))
+            #create notification
+            notif = Notification.objects.create(message="Low amount of next products: {}".format(', '.join(map(lambda x: Drug.objects.get(pk=x).name, ids))), warning=True)
+            log_create(notif)
+            
+            #sent email if option is enabled
+            product_info_on = SiteConfig.objects.get(pk=1).product_info_on
+            if not product_info_on:
+                self.last_product_info = timezone.now()
+                self.save()
+                return True
+            
+            sender = MailSender()
+            res = sender.send_email(rcp, subj, body)
             
             if res:
             
@@ -354,10 +404,15 @@ class GlobalChecker(SingletonModel):
                     d.tracking_on = False
                     d.save()
                     
-                self.last_reported = timezone.now()
+                    dbalogger.info("{} is not tracked now".format(d.__str__()))
+                    
+                self.last_product_info = timezone.now()
                 self.save()
+                
+                dbalogger.info("'Last_product_info' value was reset")
             else:
-                Notification.objects.create(message="Error while sending product info. Please, check if there is email set properly in site configuration.", warning=True)
+                notif = Notification.objects.create(message="Error while sending product info. Please, check your internet connection and email for product_info correctness in site configuration.", warning=True)
+                log_create(notif)
                 
                 
     def check_not_sent_mails(self):
@@ -380,12 +435,16 @@ class GlobalChecker(SingletonModel):
         for m in del_lst:
             m.delete()
             
+        if res:
+            notif = Notification.objects.create(message="Previous problem was resolved: all emails are sent now.", warning=True)
+            stdlogger.info("NotSentMail objects were sent successfully")
+            log_create(notif)
+        
         return res
         
     # Checking if any reports should be sent
     def global_check(self):
-        
-        print("Start global checking...")
+
         self.check_reports()
         self.check_product_info()
         self.check_not_sent_mails()

@@ -1,23 +1,39 @@
 <html>
 <head>
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Archivo+Narrow" rel="stylesheet">
+    <link rel="stylesheet" href="/static/trial/css/notifications.css">
 </head>
 
 <body>
-<a name="top"></a>
 {% include "trial\navbar.html" %}
+
+<script> 
+function mark_seen(pk) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/mark_seen?pk=' + pk, true);
+    xhr.send();
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            window.location.reload();
+        }
+    }        
+}
+
+</script>
 
 <div id="container">
     <div class="form-inline options_div">
-        <span id="s_opt"> <strong>Searching options: </strong></span>
-        <span id="n_seen">
-            <label for="not_seen">&nbsp Only not seen</label>
-            <input type="checkbox" id="not_seen">
-        </span>
-        <span id="warn">
-            <label for="warnings">&nbsp Only warnings</label>
-            <input type="checkbox" id="warnings">
-        </span>
+        <form class="form-inline" action='/notifications/' method="post">
+        {% csrf_token %}
+        <div class="form-check">
+            <label class="form-check-label" for="not_seen">&nbsp Only not seen</label>
+            <input class="form-check-input" type="checkbox" name="not_seen" id="not_seen">
+            <label class="form-check-label" for="warnings">&nbsp Only warnings</label>
+            <input class="form-check-input" type="checkbox" name="warnings" id="warnings">
+            <span> &nbsp &nbsp </span>
+            <button type="submit" class="btn btn-primary"> <span class="glyphicon glyphicon-search" aria-hidden="true" title="Mark as seen"></span></button> 
+        </div>
     </div>
     <table class="table">
     <thead>
@@ -29,7 +45,7 @@
                 <td>{{ n.datetime }}</td>
                 <td>{{ n.message }}</td>
                 <td>{{ n.warning }}</td>
-                <td>{{ n.seen }} &nbsp <span class="glyphicon glyphicon-ok" aria-hidden="true" onclick=""></span> </td>
+                <td>{{ n.seen }} &nbsp <button class="btn btn-success"><span class="glyphicon glyphicon-ok" aria-hidden="true" onclick="mark_seen( {{ n.pk }} );" title="Mark as seen"></span> </button></td>
             </tr>
         {% endfor %}
     </tbody>

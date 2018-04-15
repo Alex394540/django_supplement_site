@@ -2,7 +2,47 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8a810c76-0803-4abe-9eba-29624e02a366" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change beforePath="$PROJECT_DIR$/django_supplement_site/settings.py" afterPath="$PROJECT_DIR$/django_supplement_site/settings.py" />
+      <change beforePath="$PROJECT_DIR$/django_supplement_site/urls.py" afterPath="$PROJECT_DIR$/django_supplement_site/urls.py" />
+      <change beforePath="$PROJECT_DIR$/trial/admin.py" afterPath="$PROJECT_DIR$/trial/admin.py" />
       <change beforePath="$PROJECT_DIR$/trial/models.py" afterPath="$PROJECT_DIR$/trial/models.py" />
+      <change beforePath="$PROJECT_DIR$/trial/static/trial/css/notifications.css" afterPath="$PROJECT_DIR$/trial/static/trial/css/notifications.css" />
+      <change beforePath="$PROJECT_DIR$/trial/static/trial/css/operations.css" afterPath="$PROJECT_DIR$/trial/static/trial/css/operations.css" />
+      <change beforePath="$PROJECT_DIR$/trial/static/trial/css/orders.css" afterPath="$PROJECT_DIR$/trial/static/trial/css/orders.css" />
+      <change beforePath="$PROJECT_DIR$/trial/static/trial/css/patient_account.css" afterPath="$PROJECT_DIR$/trial/static/trial/css/patient_account.css" />
+      <change beforePath="$PROJECT_DIR$/trial/static/trial/css/product_page.css" afterPath="$PROJECT_DIR$/trial/static/trial/css/product_page.css" />
+      <change beforePath="$PROJECT_DIR$/trial/static/trial/css/site_settings.css" afterPath="$PROJECT_DIR$/trial/static/trial/css/site_settings.css" />
+      <change beforePath="$PROJECT_DIR$/trial/static/trial/css/statistics.css" afterPath="$PROJECT_DIR$/trial/static/trial/css/statistics.css" />
+      <change beforePath="$PROJECT_DIR$/trial/static/trial/css/styles.css" afterPath="$PROJECT_DIR$/trial/static/trial/css/styles.css" />
+      <change beforePath="$PROJECT_DIR$/trial/static/trial/images/contact_bg1.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/trial/static/trial/js/livesearch.js" afterPath="$PROJECT_DIR$/trial/static/trial/js/livesearch.js" />
+      <change beforePath="$PROJECT_DIR$/trial/static/trial/js/main_page.js" afterPath="$PROJECT_DIR$/trial/static/trial/js/main_page.js" />
+      <change beforePath="$PROJECT_DIR$/trial/static/trial/js/notifications.js" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/trial/static/trial/js/operations.js" afterPath="$PROJECT_DIR$/trial/static/trial/js/operations.js" />
+      <change beforePath="$PROJECT_DIR$/trial/static/trial/js/product_page.js" afterPath="$PROJECT_DIR$/trial/static/trial/js/product_page.js" />
+      <change beforePath="$PROJECT_DIR$/trial/static/trial/js/site_settings.js" afterPath="$PROJECT_DIR$/trial/static/trial/js/site_settings.js" />
+      <change beforePath="$PROJECT_DIR$/trial/static/trial/js/statistics.js" afterPath="$PROJECT_DIR$/trial/static/trial/js/statistics.js" />
+      <change beforePath="$PROJECT_DIR$/trial/static/trial/js/trading.js" afterPath="$PROJECT_DIR$/trial/static/trial/js/trading.js" />
+      <change beforePath="$PROJECT_DIR$/trial/temp_data/Cohen_Liliana.txt" afterPath="$PROJECT_DIR$/trial/temp_data/Cohen_Liliana.txt" />
+      <change beforePath="$PROJECT_DIR$/trial/temp_data/Megley_Alexey.txt" afterPath="$PROJECT_DIR$/trial/temp_data/Megley_Alexey.txt" />
+      <change beforePath="$PROJECT_DIR$/trial/templates/trial/add_doctor.html" afterPath="$PROJECT_DIR$/trial/templates/trial/add_doctor.html" />
+      <change beforePath="$PROJECT_DIR$/trial/templates/trial/add_drug.html" afterPath="$PROJECT_DIR$/trial/templates/trial/add_drug.html" />
+      <change beforePath="$PROJECT_DIR$/trial/templates/trial/createuser.html" afterPath="$PROJECT_DIR$/trial/templates/trial/createuser.html" />
+      <change beforePath="$PROJECT_DIR$/trial/templates/trial/footer.html" afterPath="$PROJECT_DIR$/trial/templates/trial/footer.html" />
+      <change beforePath="$PROJECT_DIR$/trial/templates/trial/index.html" afterPath="$PROJECT_DIR$/trial/templates/trial/index.html" />
+      <change beforePath="$PROJECT_DIR$/trial/templates/trial/login.html" afterPath="$PROJECT_DIR$/trial/templates/trial/login.html" />
+      <change beforePath="$PROJECT_DIR$/trial/templates/trial/navbar.html" afterPath="$PROJECT_DIR$/trial/templates/trial/navbar.html" />
+      <change beforePath="$PROJECT_DIR$/trial/templates/trial/notifications.html" afterPath="$PROJECT_DIR$/trial/templates/trial/notifications.html" />
+      <change beforePath="$PROJECT_DIR$/trial/templates/trial/order_details.html" afterPath="$PROJECT_DIR$/trial/templates/trial/order_details.html" />
+      <change beforePath="$PROJECT_DIR$/trial/templates/trial/orders.html" afterPath="$PROJECT_DIR$/trial/templates/trial/orders.html" />
+      <change beforePath="$PROJECT_DIR$/trial/templates/trial/patient_account.html" afterPath="$PROJECT_DIR$/trial/templates/trial/patient_account.html" />
+      <change beforePath="$PROJECT_DIR$/trial/templates/trial/product_page.html" afterPath="$PROJECT_DIR$/trial/templates/trial/product_page.html" />
+      <change beforePath="$PROJECT_DIR$/trial/templates/trial/register.html" afterPath="$PROJECT_DIR$/trial/templates/trial/register.html" />
+      <change beforePath="$PROJECT_DIR$/trial/templates/trial/site_settings.html" afterPath="$PROJECT_DIR$/trial/templates/trial/site_settings.html" />
+      <change beforePath="$PROJECT_DIR$/trial/urls.py" afterPath="$PROJECT_DIR$/trial/urls.py" />
+      <change beforePath="$PROJECT_DIR$/trial/views.py" afterPath="$PROJECT_DIR$/trial/views.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -13,12 +53,14 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
-      <file leaf-file-name="models.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/trial/models.py">
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/trial/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="588">
-              <caret line="217" column="34" lean-forward="false" selection-start-line="217" selection-start-column="34" selection-end-line="217" selection-end-column="34" />
-              <folding />
+            <state relative-caret-position="302">
+              <caret line="315" column="33" lean-forward="true" selection-start-line="315" selection-start-column="33" selection-end-line="315" selection-end-column="33" />
+              <folding>
+                <element signature="e#0#35#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -32,6 +74,7 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/trial/models.py" />
+        <option value="$PROJECT_DIR$/trial/views.py" />
       </list>
     </option>
   </component>
@@ -42,7 +85,7 @@
     <option name="height" value="990" />
   </component>
   <component name="ProjectView">
-    <navigator proportions="" version="1">
+    <navigator currentView="ProjectPane" proportions="" version="1">
       <flattenPackages />
       <showMembers />
       <showModules />
@@ -55,7 +98,26 @@
       <manualOrder />
       <foldersAlwaysOnTop value="true" />
     </navigator>
-    <panes />
+    <panes>
+      <pane id="Scratches" />
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="django_supplement_site" type="b2602c69:ProjectViewProjectNode" />
+              <item name="django_supplement_site" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="django_supplement_site" type="b2602c69:ProjectViewProjectNode" />
+              <item name="django_supplement_site" type="462c0819:PsiDirectoryNode" />
+              <item name="trial" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+    </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
@@ -90,11 +152,11 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-9" y="-9" width="1938" height="1048" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1796875" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32928178" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -107,7 +169,6 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -115,7 +176,20 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager />
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/trial/views.py</url>
+          <line>319</line>
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/trial/views.py</url>
+          <line>469</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+      <option name="time" value="2" />
+    </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
@@ -123,15 +197,49 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="e#0#28#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/trial/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="588">
-          <caret line="217" column="34" lean-forward="false" selection-start-line="217" selection-start-column="34" selection-end-line="217" selection-end-column="34" />
-          <folding />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#28#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trial/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#28#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trial/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="237">
+          <caret line="444" column="38" lean-forward="false" selection-start-line="444" selection-start-column="38" selection-end-line="444" selection-end-column="38" />
+          <folding>
+            <element signature="e#0#28#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/trial/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="302">
+          <caret line="315" column="33" lean-forward="true" selection-start-line="315" selection-start-column="33" selection-end-line="315" selection-end-column="33" />
+          <folding>
+            <element signature="e#0#35#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

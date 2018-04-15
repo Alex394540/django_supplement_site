@@ -1,6 +1,7 @@
 <html>
 
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
 <link href="https://fonts.googleapis.com/css?family=Archivo+Narrow|Graduate" rel="stylesheet">
 <link rel="stylesheet" href='/static/trial/css/styles.css'>
@@ -12,21 +13,25 @@
 <body id="body_el">
 <a name="top"></a>
 {% include "trial\navbar.html" %}
-<div style="overflow: auto; position: relative; height: auto; min-height: 92.4%;">
+<div style="position: relative; overflow: auto;">
 <h2 id="top_head"> Products List </h2>
 
     <div class="form-inline" id="search_form" >
         <label> &nbsp &nbsp Search by name: &nbsp
-            <input type="text" class="form-control" id="product_name" placeholder="Type product name" name="name" list="products" autocomplete='off'>
-                <datalist id="products"></datalist>
-            <button class="btn btn-default" type="button" id="go_search" onclick="findProduct();">
-                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-            </button>
+            <div class="input-group">
+                <input type="text" class="form-control" id="product_name" placeholder="Type product name" name="name" list="products" autocomplete='off'>
+                    <datalist id="products"></datalist>
+                <div class="input-group-btn">
+                    <button class="btn btn-default" type="button" id="go_search" onclick="findProduct();">
+                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                    </button>
+                </div>
+            </div>
         </label>
     </div>
 
 <hr>
-<div id="table_container" style="margin-bottom: 7%;">
+<div id="table_container">
 	<table class="table table-striped">
 		<tr>
 			{% for field in f_names %}
@@ -44,11 +49,13 @@
 		{% for drug in d_list %}
 		<tr>
 		    <td>
-                <a href="/trial/product_page?id={{drug.0}}">{{ drug.1 }}</a>
+                <a class="imagetip" href="/product_page?id={{drug.0}}">{{ drug.1 }}
+                    <span><img class="pop-up-image" src="{{ drug.2 }}"></span>
+                </a>
             </td>
-			{% for drug_name in drug.2 %}
+			{% for drug_name in drug.3 %}
 				<td> {{ drug_name | prepend_dollars }} </td>
-			{% endfor %}
+			{% endfor %}	
             
         {% if user.is_staff %}
         <td> 
@@ -69,10 +76,17 @@
                     <span class="glyphicon glyphicon-minus minus" aria-hidden="true" onclick="change_amount({{ drug.0 }}, -1)" title="Sell" style="cursor: pointer;"></span>
                 </td>
             {% else %}
-                <td> 
-                    <input type="number" id="panel_{{ drug.0 }}" style="width: 50px; float: left; border-radius: 2px;">
-                    <span> &nbsp </span>
-                    <span class="glyphicon glyphicon-ok-circle" aria-hidden="true" onclick="make_order({{ drug.0 }})" title="Make an order" style="cursor: pointer;"></span>
+                <td style="width: 10%; min-width: 150px;"> 
+                    <div class="input-group">
+                        <div style="width: 60%; margin: 0 20%; ">
+                            <input type="number" id="panel_{{ drug.0 }}" style="width: 50%; float: left; border-radius: 2px;">
+                            <div class="input-group-btn" style="float: left;">                         
+                                <button class="btn btn-default" type="button" onclick="make_order({{ drug.0 }})">
+                                    <span class="glyphicon glyphicon-ok-circle" aria-hidden="true" title="Make an order" style="cursor: pointer;"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </td>
             {% endif %}
 		{% endif %}

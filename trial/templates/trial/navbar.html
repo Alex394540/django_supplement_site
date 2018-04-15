@@ -1,62 +1,99 @@
-<nav class="navbar navbar-inverse">
+{% load app_tags %}
+<nav class="navbar navbar-inverse" style='font-family: "Arial Black", Gadget, sans-serif;'>
   <div class="container-fluid">
     <div class="navbar-header">
-	    <a class="navbar-brand" href="/trial/" onmouseover="this.style.color='yellow';" onmouseout="this.style.color='';">SiteName</a>
+	    <a class="navbar-brand" href="/" onmouseover="this.style.color='yellow';" onmouseout="this.style.color='';">
+            <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
+        </a>
+        
+        <span id="mobile_only" style="padding: 15px 15px; float: right;">
+            
+            {% if user.is_authenticated and user.is_staff == False and user.is_superuser == False %}
+                <a href='/patient_account/' onmouseover="this.style.color='yellow';" onmouseout="this.style.color='';">My Account &nbsp </a>
+            {% endif %}
+            
+            {% if user.is_authenticated == False %}
+                <a style="cursor: pointer;" onmouseover="this.style.color='yellow';" onmouseout="this.style.color='';">
+                    Log In <span class="glyphicon glyphicon-log-in" aria-hidden="true" onclick="centered_window('/login/', 300, 400);"></span>
+                </a>
+                
+                <span class="active" onclick="centered_window('/register/', 700, 550);">
+                    <a style="cursor: pointer;" onmouseover="this.style.color='yellow';" onmouseout="this.style.color='';"> &nbsp &nbsp Register</a>
+                </span>
+            {% elif user.is_staff == False %}
+                <a href='/logout/' onmouseover="this.style.color='yellow';" onmouseout="this.style.color='';">
+                    Log Out <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>
+                </a>
+            {% endif %}
+        
+        </span>
+        
 	</div>
+
 	<ul class="nav navbar-nav">
 	    {% if user.is_staff %}
 			<li class="active">
-				<a href='/trial/operations/' onmouseover="this.style.color='yellow';" onmouseout="this.style.color='';">Operations List</a>
+				<a href='/operations/' onmouseover="this.style.color='yellow';" onmouseout="this.style.color='';">Operations List</a>
 			</li>
 			<li class="active">
-				<a href='/trial/statistics/' onmouseover="this.style.color='yellow';" onmouseout="this.style.color='';">Statistics</a>
+				<a href='/statistics/' onmouseover="this.style.color='yellow';" onmouseout="this.style.color='';">Statistics</a>
 			</li>
-			<li class="active" onclick="centered_window('/trial/add_doctor/', 300, 320);">
+			<li class="active" onclick="centered_window('/add_doctor/', 350, 350);">
 				<a style="cursor: pointer;" onmouseover="this.style.color='yellow';" onmouseout="this.style.color='';">New Doctor</a>
 			</li>
-            <li class="active" onclick="centered_window('/trial/add_drug/', 300, 500);">
+            <li class="active" onclick="centered_window('/add_drug/', 350, 500);">
 				<a style="cursor: pointer;" onmouseover="this.style.color='yellow';" onmouseout="this.style.color='';">Add New Product</a>
 			</li>
             <li class="active">
-		        <a href='/trial/orders/' onmouseover="this.style.color='yellow';" onmouseout="this.style.color='';">Orders</a>
+		        <a href='/orders/' onmouseover="this.style.color='yellow';" onmouseout="this.style.color='';">Orders
+                    {% check_new_orders as new_orders %}
+                    {% if new_orders %}
+                        <span class="badge">new</span>
+                    {% endif %}
+                </a>
 		    </li>
 		{% endif %}
 	</ul>
 	<ul class="nav navbar-nav" id="user_op" style="float: right;">
         {% if user.is_staff %}
             <li class="active">
-		        <a href='/trial/notifications/' onmouseover="this.style.color='yellow';" onmouseout="this.style.color='';">Notifications</a>
+		        <a href='/notifications/' onmouseover="this.style.color='yellow';" onmouseout="this.style.color='';">Notifications</a>
 		    </li>
         {% endif %}
         
 	    {% if user.is_superuser %}
             <li class="active">
-				<a href='/trial/site_settings/' onmouseover="this.style.color='yellow';" onmouseout="this.style.color='';">Site Settings</a>
+				<a href='/site_settings/' onmouseover="this.style.color='yellow';" onmouseout="this.style.color='';">Site Settings</a>
 			</li>
-		    <li class="active" onclick="centered_window('/trial/createuser/', 300, 350);">
+		    <li class="active" onclick="centered_window('/createuser/', 300, 400);">
 				<a style="cursor: pointer;" onmouseover="this.style.color='yellow';" onmouseout="this.style.color='';">Create New Worker</a>
 			</li>
 		{% endif %}
         
         {% if user.is_authenticated and user.is_staff == False and user.is_superuser == False %}
             <li class="active">
-				<a href='/trial/patient_account/' onmouseover="this.style.color='yellow';" onmouseout="this.style.color='';">My Account</a>
+				<a href='/patient_account/' onmouseover="this.style.color='yellow';" onmouseout="this.style.color='';">My Account</a>
 			</li>
         {% endif %}
         
 		{% if user.is_authenticated == False %}
-		    <li class="active" onclick="centered_window('/trial/login/', 300, 350);">
-				<a style="cursor: pointer;" onmouseover="this.style.color='yellow';" onmouseout="this.style.color='';">Log In</a>
+		    <li class="active" onclick="centered_window('/login/', 300, 400);">
+				<a style="cursor: pointer;" onmouseover="this.style.color='yellow';" onmouseout="this.style.color='';">
+                    Log In
+                </a>
 			</li>
-		    <li class="active" onclick="centered_window('/trial/register/', 700, 550);">
+		    <li class="active" onclick="centered_window('/register/', 700, 550);">
 				<a style="cursor: pointer;" onmouseover="this.style.color='yellow';" onmouseout="this.style.color='';">Register</a>
 			</li>
 		{% else %}
 		    <li class="active">
-			    <a href='/trial/logout/' onmouseover="this.style.color='yellow';" onmouseout="this.style.color='';">Log Out</a>
+			    <a href='/logout/' onmouseover="this.style.color='yellow';" onmouseout="this.style.color='';">
+                    Log Out
+                </a>
 			</li>
 		{% endif %}
 	</ul>
+
   </div>
   <script src="/static/trial/js/navigation.js"></script>
 </nav>

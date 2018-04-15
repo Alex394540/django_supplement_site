@@ -1,10 +1,12 @@
 .options_div {
-    width: 90%;
-    margin: 0 auto;
+    width: 20%;
+    margin: 0 0 2% 80%;
 }
 
-#s_opt {
-    margin-right: 5%;
+#mobile_only {
+    display: none;
 }
 
-    
+#container {
+    font-family: 'Archivo Narrow', sans-serif;
+}  
