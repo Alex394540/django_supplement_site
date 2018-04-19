@@ -191,7 +191,7 @@ class NotSentMail(models.Model):
     
     def __str__(self):
         return "NotSentMail object ({}). Time is {}: recipient - {} with subject {} and with attachments: {}".format("Send error" if self.send_error else "Without send error",
-                self.created.strftime('%m/%d/%Y'), self.recipient, self.subject, self.attachments)        
+                self.created.strftime('%m/%d/%Y %I:%M:%S %p'), self.recipient, self.subject, self.attachments)        
 
 
 class MailSender:
@@ -264,7 +264,7 @@ class Notification(models.Model):
     seen = models.BooleanField(default=False)
     
     def __str__(self):
-        return "Notification object. Time = {}. Warning = {}.".format(self.datetime.strftime('%/m/%d/%y %h/%m/%s'), 'True' if warning else 'False')
+        return "Notification object. Time = {}. Warning = {}.".format(self.datetime.strftime('%m/%d/%y %I:%M:%S %p'), 'True' if self.warning else 'False')
 
 
 # Class for checking product

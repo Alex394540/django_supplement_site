@@ -5,7 +5,6 @@ from . import views
 app_name = 'trial'
 urlpatterns = [
     path('', views.index, name='index'),
-    path('thanks/', views.success, name='success'),
     path('createuser/', views.createuser, name='createuser'),
     path('add_drug/', views.add_drug, name='add_drug'),
     path('ajax/change_amount', views.change_amount, name='change_amount'),

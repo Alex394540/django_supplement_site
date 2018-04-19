@@ -24,16 +24,16 @@
                     <label for="shipping_no"> &nbsp &nbsp &nbsp &nbsp No shipping </label>
                     <input type="radio" name="shipping" id="shipping_no" value="No">
                     
-					<input type="tel" class="form-control" placeholder="Contact phone" id="phone" name="phone" value="{{ phone }}">
+					<input type="tel" class="form-control" placeholder="Contact phone" id="phone" name="phone" value="{{ phone }}" required>
                     
-                    <select class="form-control" name="doctor" id="doctor">
+                    <select class="form-control" name="doctor" id="doctor" required>
                         <option selected="selected"> {{ doctor }} </option>
                         {% for d in doc_list %}
                             <option> {{ d }} </option>
                         {% endfor %}
                     </select>
                     
-                    <input type="text" class="form-control" name="address" id="address" placeholder="Shipping Address" value="{{ address }}">	
+                    <input type="text" class="form-control" name="address" id="address" placeholder="Shipping Address" value="{{ address }}" required>	
                     <label> &nbsp </label>                    
                     <button class="btn btn-lg btn-primary btn-block" type="submit" style="font-family: Georgia, serif; background-color: rgb(18, 79, 65);">
 					      Confirm Order </button>
