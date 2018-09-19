@@ -199,8 +199,8 @@ class MailSender:
     class Meta:
         abstract = True
 
-    user = 'neuronmedicalproducts@gmail.com'
-    pwd = 'alexey63293'
+    user = 'XXXXXXXX'
+    pwd = 'XXXXXX'
 
     # Send email or add it to not sent
     def send_email(self, rcp, subj, body, attachments=None):
