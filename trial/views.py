@@ -679,7 +679,7 @@ def product_page(request):
             
             drug = Drug.objects.get(pk=id)
             
-            if drug.product_image and os.path.isfile(drug.product_image) and drug.product_image != dest:
+            if drug.product_image and os.path.isfile(drug.product_image) and not os.path.samefile(drug.product_image, dest):
                 os.remove(drug.product_image)
 
             drug.product_image = dest
